@@ -1,11 +1,13 @@
 @model IEnumerable<RolixSAEProject.Models.Produit>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
 
 @section Styles {
     <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
 
 @{
-    ViewData["Title"] = "Accueil";
+    ViewData["Title"] = V["Home_PageTitle"];
     var currency = (ViewData["Currency"] as string) ?? "EUR";
     var symbol = (ViewData["CurrencySymbol"] as string) ?? "€";
 }
@@ -14,13 +16,12 @@
     <div class="section-divider"></div>
     <h1 class="hero-title">ROLIX</h1>
     <p class="hero-subtitle">
-        L’excellence horlogère suisse depuis plus d’un siècle. Des montres pensées pour durer,
-        conçues pour traverser le temps.
+        @V["Home_HeroSubtitle"]
     </p>
 </div>
 
 <section class="section-shell home-products">
-    <h2 class="section-title">Sélection de montres</h2>
+    <h2 class="section-title">@V["Home_WatchSelectionTitle"]</h2>
 
     @if (Model != null && Model.Any())
     {
@@ -41,7 +42,6 @@
                     <div class="product-body">
                         <h3 class="product-name">@p.Nom</h3>
 
-                        @* IMPORTANT: remplace "Reference" si ton champ s’appelle autrement (Ref, ReferenceProduit, etc.) *@
                         @if (!string.IsNullOrWhiteSpace(p.Reference))
                         {
                             <div class="product-ref">REF-@p.Reference</div>
@@ -56,7 +56,7 @@
                                asp-controller="Produits"
                                asp-action="Details"
                                asp-route-id="@p.Id">
-                                Voir le détail
+                                @V["Home_ViewDetails"]
                             </a>
                         </div>
                     </div>
@@ -67,22 +67,23 @@
     else
     {
         <div class="empty-state">
-            <p>Aucune montre n’est disponible pour le moment.</p>
+            <p>@V["Home_NoWatches"]</p>
         </div>
     }
 
     <div class="cta-row">
-        <a class="button" asp-controller="Produits" asp-action="Index">Découvrir nos montres</a>
+        <a class="button" asp-controller="Produits" asp-action="Index">
+            @V["Home_DiscoverWatches"]
+        </a>
     </div>
 </section>
 
 <section class="craft-section">
     <div class="craft-shell">
         <div class="section-divider"></div>
-        <h2 class="section-title">Notre savoir-faire</h2>
+        <h2 class="section-title">@V["Home_CraftTitle"]</h2>
         <p class="craft-description">
-            Chaque montre Rolix est assemblée avec précision par des maîtres horlogers. De la conception du mouvement à l’assemblage final,
-            chaque détail est contrôlé pour garantir une qualité irréprochable.
+            @V["Home_CraftDescription"]
         </p>
     </div>
 </section>

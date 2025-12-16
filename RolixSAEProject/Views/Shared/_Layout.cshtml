@@ -1,5 +1,8 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<RolixSAEProject.SharedResource> L
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,6 +18,8 @@
         var currentCurrency = Context.Request.Cookies["Currency"] ?? "EUR";
         var returnUrl = Context.Request.Path + Context.Request.QueryString;
         var currency = (ViewData["Currency"] as string) ?? "EUR";
+
+        var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName; // "fr" ou "en"
     }
 
     <header class="app-header">
@@ -22,16 +27,31 @@
             <a class="brand" asp-controller="Home" asp-action="Index">ROLIX</a>
 
             <nav class="header-nav">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : string.Empty)" asp-controller="Home" asp-action="Index">Accueil</a>
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Produits" ? "active" : string.Empty)" asp-controller="Produits" asp-action="Index">Nos produits</a>
-                <a class="nav-link" asp-controller="Home" asp-action="AboutUs">Notre entreprise</a>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : string.Empty)"
+                   asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Produits" ? "active" : string.Empty)"
+                   asp-controller="Produits" asp-action="Index">@L["Nav_Products"]</a>
+
+                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "AboutUs" ? "active" : string.Empty)"
+                   asp-controller="Home" asp-action="AboutUs">@L["Nav_About"]</a>
             </nav>
 
             <div class="header-actions">
                 <div class="language-switch">
-                    <span class="language active">FR</span>
+                    <a class="language @(currentLang == "fr" ? "active" : "")"
+                       asp-controller="Preferences"
+                       asp-action="SetLanguage"
+                       asp-route-culture="fr"
+                       asp-route-returnUrl="@returnUrl">FR</a>
+
                     <span class="divider">/</span>
-                    <span class="language">EN</span>
+
+                    <a class="language @(currentLang == "en" ? "active" : "")"
+                       asp-controller="Preferences"
+                       asp-action="SetLanguage"
+                       asp-route-culture="en"
+                       asp-route-returnUrl="@returnUrl">EN</a>
                 </div>
 
                 <div class="currency-switch" data-dropdown="currency">
@@ -44,7 +64,7 @@
                         <span class="chevron" aria-hidden="true">▾</span>
                     </button>
 
-                    <div id="currency-menu" class="currency-menu" role="menu" aria-label="Choisir une devise">
+                    <div id="currency-menu" class="currency-menu" role="menu" aria-label="@L["Currency_AriaLabel"]">
                         <a role="menuitem"
                            class="currency-item @(currentCurrency == "EUR" ? "is-active" : "")"
                            asp-controller="Preferences"
@@ -80,8 +100,7 @@
                     </div>
                 </div>
 
-
-                <a class="account-link" href="#">Mon compte</a>
+                <a class="account-link" href="#">@L["MyAccount"]</a>
             </div>
         </div>
     </header>
@@ -94,11 +113,11 @@
         <div class="footer-shell">
             <div class="brand">ROLIX</div>
             <div class="footer-links">
-                <a href="#">Politique de confidentialité</a>
-                <a href="#">Conditions générales</a>
-                <a href="#">Contact</a>
+                <a href="#">@L["Footer_Privacy"]</a>
+                <a href="#">@L["Footer_Terms"]</a>
+                <a href="#">@L["Footer_Contact"]</a>
             </div>
-            <p class="footer-copy">© 2025 Rolix. Tous droits réservés.</p>
+            <p class="footer-copy">@L["Footer_Copy"]</p>
         </div>
     </footer>
 

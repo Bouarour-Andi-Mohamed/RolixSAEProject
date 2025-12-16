@@ -1,10 +1,13 @@
 ﻿@model IEnumerable<RolixSAEProject.Models.Produit>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
+
 @section Styles {
     <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
 
 @{
-    ViewData["Title"] = "Liste des produits";
+    ViewData["Title"] = V["Products_PageTitle"];
     var currency = ViewBag.CurrentCurrency as string ?? "EUR";
     var symbol = currency switch
     {
@@ -18,7 +21,7 @@
 
     <div class="products-topline">
         <div>
-            <h1 class="products-title">Nos Montres</h1>
+            <h1 class="products-title">@V["Products_Title"]</h1>
         </div>
     </div>
 
@@ -41,7 +44,7 @@
                        id="search"
                        name="search"
                        value="@ViewBag.CurrentSearch"
-                       placeholder="Rechercher"
+                       placeholder="@V["Products_SearchPlaceholder"]"
                        autocomplete="off" />
             </div>
         </div>
@@ -50,9 +53,9 @@
         <div class="filters-oneline">
 
             <div class="field">
-                <label for="collection">Collection</label>
+                <label for="collection">@V["Products_LabelCollection"]</label>
                 <select id="collection" name="collection">
-                    <option value="all">Toutes</option>
+                    <option value="all">@V["Products_OptionAll_Fem"]</option>
                     @if (ViewBag.Collections != null)
                     {
                         foreach (string col in (IEnumerable<string>)ViewBag.Collections)
@@ -65,9 +68,9 @@
             </div>
 
             <div class="field">
-                <label for="categorie">Type</label>
+                <label for="categorie">@V["Products_LabelType"]</label>
                 <select id="categorie" name="categorie">
-                    <option value="all">Toutes</option>
+                    <option value="all">@V["Products_OptionAll_Fem"]</option>
                     @if (ViewBag.Categories != null)
                     {
                         foreach (string cat in (IEnumerable<string>)ViewBag.Categories)
@@ -80,9 +83,9 @@
             </div>
 
             <div class="field">
-                <label for="genre">Genre</label>
+                <label for="genre">@V["Products_LabelGender"]</label>
                 <select id="genre" name="genre">
-                    <option value="all">Tous</option>
+                    <option value="all">@V["Products_OptionAll_Masc"]</option>
                     @if (ViewBag.Genres != null)
                     {
                         foreach (string g in (IEnumerable<string>)ViewBag.Genres)
@@ -96,26 +99,26 @@
 
             <!-- PRICE: same line -->
             <div class="field field-price">
-                <label>Prix</label>
-                <div class="price-seg" role="group" aria-label="Tri prix">
+                <label>@V["Products_LabelPrice"]</label>
+                <div class="price-seg" role="group" aria-label="@V["Products_AriaPriceSorting"]">
                     <button type="submit"
                             name="sort"
                             value="price_asc"
                             class="price-seg-btn @(ViewBag.CurrentSort == "price_asc" ? "is-active" : "")">
-                        Prix croissant
+                        @V["Products_PriceAsc"]
                     </button>
 
                     <button type="submit"
                             name="sort"
                             value="price_desc"
                             class="price-seg-btn @(ViewBag.CurrentSort == "price_desc" ? "is-active" : "")">
-                        Prix décroissant
+                        @V["Products_PriceDesc"]
                     </button>
                 </div>
             </div>
 
             <div class="filters-count">
-                @(Model?.Count() ?? 0) montres
+                @(Model?.Count() ?? 0) @V["Products_CountLabel"]
             </div>
 
         </div>
@@ -154,7 +157,7 @@
                                asp-controller="Produits"
                                asp-action="Details"
                                asp-route-id="@p.Id">
-                                Voir le détail
+                                @V["Products_ViewDetails"]
                             </a>
                         </div>
                     </div>
@@ -165,7 +168,7 @@
     else
     {
         <div class="empty-state">
-            Aucune montre n’est disponible pour le moment.
+            @V["Products_Empty"]
         </div>
     }
 
