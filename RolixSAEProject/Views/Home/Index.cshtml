@@ -1,5 +1,9 @@
 @model IEnumerable<RolixSAEProject.Models.Produit>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
+
 @{
     ViewData["Title"] = "Accueil";
     var currency = (ViewData["Currency"] as string) ?? "EUR";
@@ -15,36 +19,46 @@
     </p>
 </div>
 
-<section class="section-shell">
+<section class="section-shell home-products">
     <h2 class="section-title">Sélection de montres</h2>
 
     @if (Model != null && Model.Any())
     {
-        <div class="featured-grid">
-            @foreach (var produit in Model)
+        <div class="products-grid">
+            @foreach (var p in Model)
             {
-                var imageUrl = string.IsNullOrWhiteSpace(produit.ImageUrl)
+                var imageUrl = string.IsNullOrWhiteSpace(p.ImageUrl)
                 ? Url.Content("~/images/placeholder-watch.svg")
-                : produit.ImageUrl;
+                : p.ImageUrl;
 
                 <article class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="@imageUrl" alt="@produit.Nom" class="product-image" />
+                    <div class="product-media">
+                        <a asp-controller="Produits" asp-action="Details" asp-route-id="@p.Id">
+                            <img src="@imageUrl" alt="@p.Nom" />
+                        </a>
                     </div>
-                    <div class="product-infos">
-                        <div class="product-title">@produit.Nom</div>
-                        <div class="product-meta">@produit.Collection</div>
+
+                    <div class="product-body">
+                        <h3 class="product-name">@p.Nom</h3>
+
+                        @* IMPORTANT: remplace "Reference" si ton champ s’appelle autrement (Ref, ReferenceProduit, etc.) *@
+                        @if (!string.IsNullOrWhiteSpace(p.Reference))
+                        {
+                            <div class="product-ref">REF-@p.Reference</div>
+                        }
 
                         <div class="product-price">
-                            @produit.GetPrice(currency).ToString("N2") @symbol
+                            @p.GetPrice(currency).ToString("N0") @symbol
                         </div>
 
-                        <a class="button button-outline"
-                           asp-controller="Produits"
-                           asp-action="Details"
-                           asp-route-id="@produit.Id">
-                            Voir le détail
-                        </a>
+                        <div class="product-actions">
+                            <a class="button button-outline"
+                               asp-controller="Produits"
+                               asp-action="Details"
+                               asp-route-id="@p.Id">
+                                Voir le détail
+                            </a>
+                        </div>
                     </div>
                 </article>
             }
