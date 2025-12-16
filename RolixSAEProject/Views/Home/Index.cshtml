@@ -1,8 +1,64 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model IEnumerable<RolixSAEProject.Models.Produit>
+@{
+    ViewData["Title"] = "Accueil";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-hero">
+    <div class="section-divider"></div>
+    <h1 class="hero-title">ROLIX</h1>
+    <p class="hero-subtitle">
+        L’excellence horlogère suisse depuis plus d’un siècle. Des montres pensées pour durer,
+        conçues pour traverser le temps.
+    </p>
 </div>
+
+<section class="section-shell">
+    <h2 class="section-title">Sélection de montres</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="featured-grid">
+            @foreach (var produit in Model)
+            {
+                var imageUrl = string.IsNullOrWhiteSpace(produit.ImageUrl)
+                    ? Url.Content("~/images/placeholder-watch.svg")
+                    : produit.ImageUrl;
+
+                <article class="product-card">
+                    <div class="product-image-wrapper">
+                        <img src="@imageUrl" alt="@produit.Nom" class="product-image" />
+                    </div>
+                    <div class="product-infos">
+                        <div class="product-title">@produit.Nom</div>
+                        <div class="product-meta">@produit.Collection</div>
+                        <div class="product-price">@produit.PrixEUR.ToString("N2") €</div>
+                        <a class="button button-outline" asp-controller="Produits" asp-action="Details" asp-route-id="@produit.Id">
+                            Voir le détail
+                        </a>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <p>Aucune montre n’est disponible pour le moment.</p>
+        </div>
+    }
+
+    <div class="cta-row">
+        <a class="button" asp-controller="Produits" asp-action="Index">Découvrir nos montres</a>
+    </div>
+</section>
+
+<section class="craft-section">
+    <div class="craft-shell">
+        <div class="section-divider"></div>
+        <h2 class="section-title">Notre savoir-faire</h2>
+        <p class="craft-description">
+            Chaque montre Rolix est assemblée avec précision par des maîtres horlogers. De la conception du mouvement à l’assemblage final,
+            chaque détail est contrôlé pour garantir une qualité irréprochable.
+        </p>
+    </div>
+</section>
