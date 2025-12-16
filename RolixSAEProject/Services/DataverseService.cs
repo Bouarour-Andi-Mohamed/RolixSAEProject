@@ -137,7 +137,16 @@ namespace RolixSAEProject.Services
                     "crda6_categorie",
                     "crda6_collection",
                     "crda6_genre",
-                    "crda6_imageurl"
+                    "crda6_imageurl",
+                    "crda6_mouvement",
+                    "crda6_calibre",
+                    "crda6_materiau",
+                    "crda6_bracelet",
+                    "crda6_tailleduboitiermm",
+                    "crda6_etancheitem",
+                    "crda6_verre",
+                    "crda6_loupecyclope"
+
                 )
             };
 
@@ -210,6 +219,19 @@ namespace RolixSAEProject.Services
                     decimal prixCHF = TryGetPrice(priceByCurrency, "CHF", e.Id);
                     decimal prixUSD = TryGetPrice(priceByCurrency, "USD", e.Id);
 
+                    // --- AJOUT : récupérer les libellés des Options (Choice) via FormattedValues ---
+                    e.FormattedValues.TryGetValue("crda6_mouvement", out var mouvementLabel);
+                    e.FormattedValues.TryGetValue("crda6_materiau", out var materiauLabel);
+                    e.FormattedValues.TryGetValue("crda6_bracelet", out var braceletLabel);
+                    e.FormattedValues.TryGetValue("crda6_verre", out var verreLabel);
+
+                    // --- AJOUT : texte / int / bool ---
+                    var calibre = e.GetAttributeValue<string>("crda6_calibre") ?? string.Empty;
+                    var etancheiteM = e.GetAttributeValue<string>("crda6_etancheitem") ?? string.Empty;
+                    var tailleBoitierMm = e.GetAttributeValue<int?>("crda6_tailleduboitiermm") ?? 0;
+                    var loupeCyclope = e.GetAttributeValue<bool?>("crda6_loupecyclope") ?? false;
+
+
                     return new Produit
                     {
                         Id = index + 1,
@@ -221,7 +243,19 @@ namespace RolixSAEProject.Services
                         PrixUSD = prixUSD,
                         Categorie = categorieTexte,
                         Collection = collectionTexte,
-                        Genre = genreTexte
+                        Genre = genreTexte,
+                        // --- AJOUT : mapping des nouveaux champs ---
+                        Mouvement = mouvementLabel ?? string.Empty,
+                        Calibre = calibre,
+                        Materiau = materiauLabel ?? string.Empty,
+                        Bracelet = braceletLabel ?? string.Empty,
+                        TailleBoitierMm = tailleBoitierMm,
+                        EtancheiteM = etancheiteM,
+                        Verre = verreLabel ?? string.Empty,
+                        LoupeCyclope = loupeCyclope,
+
+
+
                     };
                 })
                 .ToList();

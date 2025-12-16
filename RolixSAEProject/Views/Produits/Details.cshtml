@@ -6,6 +6,7 @@
 
 @{
     ViewData["Title"] = "Détail du produit";
+
     var currency = ViewBag.CurrentCurrency as string ?? "EUR";
     var symbol = currency switch
     {
@@ -17,6 +18,28 @@
     var imageUrl = !string.IsNullOrWhiteSpace(Model.ImageUrl)
         ? Model.ImageUrl
         : Url.Content("~/images/placeholder-watch.svg");
+
+    // Helpers d'affichage (évite les champs vides)
+    var mouvement = string.IsNullOrWhiteSpace(Model.Mouvement) ? "—" : Model.Mouvement;
+    var calibre = string.IsNullOrWhiteSpace(Model.Calibre) ? "—" : Model.Calibre;
+    var materiau = string.IsNullOrWhiteSpace(Model.Materiau) ? "—" : Model.Materiau;
+    var bracelet = string.IsNullOrWhiteSpace(Model.Bracelet) ? "—" : Model.Bracelet;
+    var verre = string.IsNullOrWhiteSpace(Model.Verre) ? "—" : Model.Verre;
+
+    // Selon ton type côté model (int? / int), adapte si besoin
+    var tailleBoitier = (Model.TailleBoitierMm > 0) ? $"{Model.TailleBoitierMm}mm" : "—";
+
+    // Étanchéité est "texte une ligne" dans Dataverse => souvent string ("200")
+    var etancheite = string.IsNullOrWhiteSpace(Model.EtancheiteM) ? "—" : $"{Model.EtancheiteM}m";
+
+    var loupeCyclope = Model.LoupeCyclope ? "Oui" : "Non";
+
+    // Pour "Saphir (loupe Cyclope)" dans la section détaillée
+    var verreDetail = verre;
+    if (Model.LoupeCyclope && verreDetail != "—")
+    {
+        verreDetail = $"{verreDetail} (loupe Cyclope)";
+    }
 }
 
 <div class="details-shell">
@@ -58,19 +81,19 @@
             <div class="details-specs">
                 <div class="spec-row">
                     <span class="spec-label">Mouvement</span>
-                    <span class="spec-value">Automatique</span>
+                    <span class="spec-value">@mouvement</span>
                 </div>
                 <div class="spec-row">
                     <span class="spec-label">Taille du boîtier</span>
-                    <span class="spec-value">41mm</span>
+                    <span class="spec-value">@tailleBoitier</span>
                 </div>
                 <div class="spec-row">
                     <span class="spec-label">Matériau</span>
-                    <span class="spec-value">Acier</span>
+                    <span class="spec-value">@materiau</span>
                 </div>
                 <div class="spec-row">
                     <span class="spec-label">Étanchéité</span>
-                    <span class="spec-value">200m</span>
+                    <span class="spec-value">@etancheite</span>
                 </div>
             </div>
 
@@ -90,16 +113,17 @@
 
         <div class="bottom-grid">
             <div class="bottom-col">
-                <div><span class="k">Mouvement</span> Automatique</div>
-                <div><span class="k">Calibre</span> 3235</div>
-                <div><span class="k">Matériau</span> Acier</div>
-                <div><span class="k">Bracelet</span> Oyster</div>
+                <div><span class="k">Mouvement</span> @mouvement</div>
+                <div><span class="k">Calibre</span> @calibre</div>
+                <div><span class="k">Matériau</span> @materiau</div>
+                <div><span class="k">Bracelet</span> @bracelet</div>
             </div>
 
             <div class="bottom-col">
-                <div><span class="k">Taille</span> 41mm</div>
-                <div><span class="k">Étanchéité</span> 200m</div>
-                <div><span class="k">Verre</span> Saphir (loupe Cyclope)</div>
+                <div><span class="k">Taille</span> @tailleBoitier</div>
+                <div><span class="k">Étanchéité</span> @etancheite</div>
+                <div><span class="k">Verre</span> @verreDetail</div>
+                <div><span class="k">Loupe Cyclope</span> @loupeCyclope</div>
             </div>
         </div>
     </div>
