@@ -14,47 +14,40 @@
     };
 }
 
-
 <div class="products-shell">
 
     <div class="products-topline">
         <div>
-            <h1 class="products-title">Nos montres Rolix</h1>
-            <p class="products-subtitle">Catalogue connecté à Dataverse (environnement sandbox).</p>
-        </div>
-        <div class="products-subtitle">
-            Devise active : <strong>@currency</strong>
+            <h1 class="products-title">Nos Montres</h1>
         </div>
     </div>
 
     <div class="products-divider"></div>
 
-    <form id="filtersForm" method="get" asp-controller="Produits" asp-action="Index" class="filters-card">
-        <div class="filters-row">
+    <form id="filtersForm" method="get" asp-controller="Produits" asp-action="Index" class="filters-card filters-card--new">
+        <input type="hidden" name="page" value="0" />
 
-            <div class="field">
-                <label for="search">Recherche</label>
+        <!-- SEARCH centered -->
+        <div class="filters-searchline">
+            <div class="search-field">
+                <span class="search-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M10.5 18.5a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" />
+                        <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </span>
+
                 <input type="text"
                        id="search"
                        name="search"
                        value="@ViewBag.CurrentSearch"
-                       placeholder="Nom de la montre..." />
+                       placeholder="Rechercher"
+                       autocomplete="off" />
             </div>
+        </div>
 
-            <div class="field">
-                <label for="categorie">Catégorie</label>
-                <select id="categorie" name="categorie">
-                    <option value="all">Toutes</option>
-                    @if (ViewBag.Categories != null)
-                    {
-                        foreach (string cat in (IEnumerable<string>)ViewBag.Categories)
-                        {
-                            bool isSelected = (string?)ViewBag.CurrentCategorie == cat;
-                            <option value="@cat" selected="@(isSelected ? "selected" : null)">@cat</option>
-                        }
-                    }
-                </select>
-            </div>
+        <!-- FILTERS + PRICE (same line) -->
+        <div class="filters-oneline">
 
             <div class="field">
                 <label for="collection">Collection</label>
@@ -66,6 +59,21 @@
                         {
                             bool isSelected = (string?)ViewBag.CurrentCollection == col;
                             <option value="@col" selected="@(isSelected ? "selected" : null)">@col</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="categorie">Type</label>
+                <select id="categorie" name="categorie">
+                    <option value="all">Toutes</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        foreach (string cat in (IEnumerable<string>)ViewBag.Categories)
+                        {
+                            bool isSelected = (string?)ViewBag.CurrentCategorie == cat;
+                            <option value="@cat" selected="@(isSelected ? "selected" : null)">@cat</option>
                         }
                     }
                 </select>
@@ -86,26 +94,33 @@
                 </select>
             </div>
 
+            <!-- PRICE: same line -->
             <div class="field field-price">
                 <label>Prix</label>
-                <div class="sort-group" role="group" aria-label="Tri prix">
+                <div class="price-seg" role="group" aria-label="Tri prix">
                     <button type="submit"
                             name="sort"
                             value="price_asc"
-                            class="button button-outline @(ViewBag.CurrentSort == "price_asc" ? "active" : "")">
-                        Prix ↑
+                            class="price-seg-btn @(ViewBag.CurrentSort == "price_asc" ? "is-active" : "")">
+                        Prix croissant
                     </button>
 
                     <button type="submit"
                             name="sort"
                             value="price_desc"
-                            class="button button-outline @(ViewBag.CurrentSort == "price_desc" ? "active" : "")">
-                        Prix ↓
+                            class="price-seg-btn @(ViewBag.CurrentSort == "price_desc" ? "is-active" : "")">
+                        Prix décroissant
                     </button>
                 </div>
             </div>
 
+            <div class="filters-count">
+                @(Model?.Count() ?? 0) montres
+            </div>
+
         </div>
+
+        <div class="filters-divider"></div>
     </form>
 
     @if (Model != null && Model.Any())
@@ -125,19 +140,17 @@
                     </div>
 
                     <div class="product-body">
-                        <h3 class="product-name">@p.Nom</h3>
+                        <div class="product-name">@p.Nom</div>
 
-                        <p class="product-meta">
-                            <strong>Catégorie :</strong> @p.Categorie<br />
-                            <strong>Collection :</strong> @p.Collection
-                        </p>
+                        @* Remplace "Reference" si ton champ a un autre nom *@
+                        <div class="product-ref">@p.Reference</div>
 
                         <div class="product-price">
                             @p.GetPrice(currency).ToString("N0") @symbol
                         </div>
 
                         <div class="product-actions">
-                            <a class="button button-outline"
+                            <a class="product-btn"
                                asp-controller="Produits"
                                asp-action="Details"
                                asp-route-id="@p.Id">
@@ -157,3 +170,24 @@
     }
 
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const form = document.getElementById("filtersForm");
+          if (!form) return;
+
+          const selects = form.querySelectorAll("select");
+          selects.forEach(s => s.addEventListener("change", () => form.submit()));
+
+          const search = form.querySelector("#search");
+          let t = null;
+          if (search) {
+            search.addEventListener("input", () => {
+              clearTimeout(t);
+              t = setTimeout(() => form.submit(), 450);
+            });
+          }
+        });
+    </script>
+}
