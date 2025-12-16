@@ -1,6 +1,255 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Notre entreprise";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    /* ====== NOTRE ENTREPRISE (CSS intégré) ====== */
+
+    .about-hero {
+        position: relative;
+        height: 320px;
+        overflow: hidden;
+        background: #111;
+    }
+
+    .about-hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.78;
+        transform: scale(1.02);
+        display: block;
+    }
+
+    .about-hero-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+    }
+
+    .about-hero-title {
+        color: #fff;
+        letter-spacing: 0.25em;
+        font-weight: 500;
+        font-size: 12px;
+        text-align: center;
+        margin: 0;
+    }
+
+    .about-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 56px 20px 90px;
+    }
+
+    .about-page-title {
+        text-align: center;
+        letter-spacing: 0.2em;
+        font-weight: 500;
+        font-size: 12px;
+        margin: 0 0 42px;
+    }
+
+    .about-section {
+        margin: 0 auto;
+        padding: 14px 0;
+    }
+
+    .about-section-title {
+        font-weight: 600;
+        font-size: 12px;
+        margin: 0 0 16px;
+        letter-spacing: 0.06em;
+    }
+
+    .about-text {
+        color: #2d2d2d;
+        line-height: 1.7;
+        font-size: 12px;
+        margin: 0 0 14px;
+    }
+
+    .about-history {
+        max-width: 680px;
+        text-align: center;
+    }
+
+    .about-values {
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+
+    .about-values-title {
+        text-align: center;
+    }
+
+    .about-values-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 34px;
+        margin-top: 24px;
+    }
+
+    .about-value-card {
+        text-align: center;
+    }
+
+    .about-value-num {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 14px;
+        border: 1px solid #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        user-select: none;
+    }
+
+    .about-value-title {
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0 0 10px;
+    }
+
+    .about-value-text {
+        font-size: 12px;
+        color: #444;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .about-divider {
+        height: 1px;
+        background: #e6e6e6;
+        margin: 26px 0;
+    }
+
+    .about-craft-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 46px;
+        align-items: start;
+    }
+
+    .about-craft-media {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        background: #f4f4f4;
+        overflow: hidden;
+    }
+
+    .about-craft-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .about-commit {
+        max-width: 720px;
+        margin: 0 auto;
+        text-align: center;
+        padding-top: 10px;
+    }
+
+   
+</style>
+
+@{
+    // Mets tes images dans wwwroot/images/
+    // - entreprise-hero.jpg : grande image bannière
+    // - entreprise-craft.jpg : image section horlogerie
+    var heroImage = Url.Content("~/images/entreprise-hero.jpg");
+    var craftImage = Url.Content("~/images/entreprise-craft.jpg");
+}
+
+<div class="about-hero">
+    <img src="@heroImage" alt="Rolix" class="about-hero-img" />
+    <div class="about-hero-overlay">
+        <h1 class="about-hero-title">L’Excellence Horlogère Depuis 1905</h1>
+    </div>
+</div>
+
+<div class="about-shell">
+    <h2 class="about-page-title">À propos de Rolix</h2>
+
+    <section class="about-section about-history">
+        <h3 class="about-section-title">Notre Histoire</h3>
+        <p class="about-text">
+            Fondée en 1905, Rolix incarne plus d’un siècle d’excellence dans l’art horloger.
+            Notre maison s’est bâtie sur des valeurs intemporelles de précision, d’innovation et d’élégance.
+        </p>
+        <p class="about-text">
+            Chaque montre Rolix est le fruit d’un savoir-faire artisanal exceptionnel, alliant tradition et technologies de pointe.
+            Nos maîtres horlogers perpétuent un héritage de perfection, créant des garde-temps qui transcendent les générations.
+        </p>
+    </section>
+
+    <section class="about-section about-values">
+        <h3 class="about-section-title about-values-title">Nos Valeurs</h3>
+
+        <div class="about-values-grid">
+            <div class="about-value-card">
+                <div class="about-value-num">01</div>
+                <h4 class="about-value-title">Excellence</h4>
+                <p class="about-value-text">
+                    Chaque détail compte. Nous poursuivons la perfection dans chaque montre que nous créons.
+                </p>
+            </div>
+
+            <div class="about-value-card">
+                <div class="about-value-num">02</div>
+                <h4 class="about-value-title">Innovation</h4>
+                <p class="about-value-text">
+                    Nous repoussons constamment les limites de l’horlogerie tout en respectant nos traditions.
+                </p>
+            </div>
+
+            <div class="about-value-card">
+                <div class="about-value-num">03</div>
+                <h4 class="about-value-title">Élégance</h4>
+                <p class="about-value-text">
+                    Le design intemporel rencontre la sophistication moderne dans chacune de nos créations.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"></div>
+
+    <section class="about-section">
+        <div class="about-craft-grid">
+            <div>
+                <h3 class="about-section-title">L’Art de l’Horlogerie</h3>
+                <p class="about-text">
+                    Nos ateliers, situés au cœur de la Suisse horlogère, abritent des artisans d’exception.
+                    Chaque mouvement est assemblé à la main avec une précision méticuleuse.
+                </p>
+                <p class="about-text">
+                    Des composants les plus infimes aux boîtiers finement polis, chaque élément reflète notre engagement envers l’excellence absolue.
+                    Une montre Rolix peut nécessiter jusqu’à 800 heures de travail minutieux.
+                </p>
+            </div>
+
+            <div class="about-craft-media">
+                <img src="@craftImage" alt="Horlogerie" class="about-craft-img" />
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"></div>
+
+    <section class="about-section about-commit">
+        <h3 class="about-section-title">Notre Engagement</h3>
+        <p class="about-text">
+            Rolix s’engage à créer des montres durables, conçues pour traverser le temps.
+            Nous sélectionnons uniquement les matériaux les plus nobles et offrons un service après-vente d’excellence
+            pour préserver votre investissement.
+        </p>
+    </section>
+</div>
