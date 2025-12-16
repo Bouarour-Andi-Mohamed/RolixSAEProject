@@ -33,8 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
         toggleMenu();
     });
 
-    currencyMenu.querySelectorAll("button").forEach((option) => {
-        option.addEventListener("click", () => {
+    currencyMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
             closeMenu();
         });
     });

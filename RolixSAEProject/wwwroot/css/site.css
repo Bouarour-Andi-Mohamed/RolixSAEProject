@@ -122,35 +122,19 @@ button {
   padding: 8px 0;
   text-align: left;
   letter-spacing: 0.08em;
-  z-index: 10;
 }
 
-.currency-option {
+.currency-menu span {
   padding: 10px 16px;
   display: block;
-  width: 100%;
-  text-align: left;
   color: var(--text-primary);
-  background: transparent;
-  border: none;
-  font: inherit;
-  letter-spacing: inherit;
-  cursor: pointer;
 }
 
-.currency-option:hover,
-.currency-option:focus-visible {
+.currency-menu span:hover {
   background: var(--background-muted);
-  outline: none;
 }
 
-.currency-option[aria-current="true"] {
-  font-weight: 600;
-}
-
-.currency-switch.open .currency-menu,
-.currency-switch:hover .currency-menu,
-.currency-switch:focus-within .currency-menu {
+.currency-switch:hover .currency-menu {
   display: flex;
 }
 

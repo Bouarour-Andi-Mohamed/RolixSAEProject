@@ -9,10 +9,6 @@
     <link rel="stylesheet" href="~/RolixSAEProject.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @{
-        var currentCurrency = Context.Request.Cookies["Currency"] ?? "EUR";
-        var returnUrl = Context.Request.Path + Context.Request.QueryString;
-    }
     <header class="app-header">
         <div class="header-shell">
             <a class="brand" asp-controller="Home" asp-action="Index">ROLIX</a>
@@ -31,16 +27,14 @@
                 </div>
 
                 <div class="currency-switch">
-                    <button type="button" class="currency-button" aria-haspopup="true" aria-expanded="false">
-                        @currentCurrency
+                    <button type="button" class="currency-button">
+                        EUR
                         <span class="chevron">▾</span>
                     </button>
-                    <form class="currency-menu" method="get" asp-controller="Preferences" asp-action="SetCurrency">
-                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                        <button type="submit" name="currency" value="EUR" class="currency-option" aria-current="@(currentCurrency == "EUR" ? "true" : "false")">EUR</button>
-                        <button type="submit" name="currency" value="CHF" class="currency-option" aria-current="@(currentCurrency == "CHF" ? "true" : "false")">CHF</button>
-                        <button type="submit" name="currency" value="USD" class="currency-option" aria-current="@(currentCurrency == "USD" ? "true" : "false")">USD</button>
-                    </form>
+                    <div class="currency-menu">
+                        <span>CHF</span>
+                        <span>USD</span>
+                    </div>
                 </div>
 
                 <a class="account-link" href="#">Mon compte</a>
