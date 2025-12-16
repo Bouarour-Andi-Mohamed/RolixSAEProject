@@ -9,10 +9,6 @@
     <link rel="stylesheet" href="~/RolixSAEProject.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @{
-        var currentCurrency = Context.Request.Cookies["Currency"] ?? "EUR";
-        var returnUrl = Context.Request.Path + Context.Request.QueryString;
-    }
     <header class="app-header">
         <div class="header-shell">
             <a class="brand" asp-controller="Home" asp-action="Index">ROLIX</a>
@@ -32,13 +28,12 @@
 
                 <div class="currency-switch">
                     <button type="button" class="currency-button">
-                        @currentCurrency
+                        EUR
                         <span class="chevron">▾</span>
                     </button>
                     <div class="currency-menu">
-                        <a asp-controller="Preferences" asp-action="SetCurrency" asp-route-currency="EUR" asp-route-returnUrl="@returnUrl">EUR</a>
-                        <a asp-controller="Preferences" asp-action="SetCurrency" asp-route-currency="CHF" asp-route-returnUrl="@returnUrl">CHF</a>
-                        <a asp-controller="Preferences" asp-action="SetCurrency" asp-route-currency="USD" asp-route-returnUrl="@returnUrl">USD</a>
+                        <span>CHF</span>
+                        <span>USD</span>
                     </div>
                 </div>
 

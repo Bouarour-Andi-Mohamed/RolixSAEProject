@@ -1,13 +1,6 @@
 @model IEnumerable<RolixSAEProject.Models.Produit>
 @{
     ViewData["Title"] = "Accueil";
-    var currency = ViewBag.CurrentCurrency as string ?? "EUR";
-    var symbol = currency switch
-    {
-        "CHF" => "CHF",
-        "USD" => "$",
-        _ => "€"
-    };
 }
 
 <div class="page-hero">
@@ -38,7 +31,7 @@
                     <div class="product-infos">
                         <div class="product-title">@produit.Nom</div>
                         <div class="product-meta">@produit.Collection</div>
-                        <div class="product-price">@produit.GetPrice(currency).ToString("N2") @symbol</div>
+                        <div class="product-price">@produit.PrixEUR.ToString("N2") €</div>
                         <a class="button button-outline" asp-controller="Produits" asp-action="Details" asp-route-id="@produit.Id">
                             Voir le détail
                         </a>
