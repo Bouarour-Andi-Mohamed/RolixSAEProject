@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,33 +9,60 @@
     <link rel="stylesheet" href="~/RolixSAEProject.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <ul class="navbar-nav flex-grow-1">
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Produits" asp-action="Index">Produits</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                </li>
-            </ul>
+    @{
+        var currentCurrency = Context.Request.Cookies["Currency"] ?? "EUR";
+        var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    }
+    <header class="app-header">
+        <div class="header-shell">
+            <a class="brand" asp-controller="Home" asp-action="Index">ROLIX</a>
 
-        </nav>
+            <nav class="header-nav">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : string.Empty)" asp-controller="Home" asp-action="Index">Accueil</a>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Produits" ? "active" : string.Empty)" asp-controller="Produits" asp-action="Index">Nos produits</a>
+                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Notre entreprise</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="language-switch">
+                    <span class="language active">FR</span>
+                    <span class="divider">/</span>
+                    <span class="language">EN</span>
+                </div>
+
+                <div class="currency-switch">
+                    <button type="button" class="currency-button" aria-haspopup="true" aria-expanded="false">
+                        @currentCurrency
+                        <span class="chevron">▾</span>
+                    </button>
+                    <div class="currency-menu">
+                        <a asp-controller="Preferences" asp-action="SetCurrency" asp-route-currency="EUR" asp-route-returnUrl="@returnUrl">EUR</a>
+                        <a asp-controller="Preferences" asp-action="SetCurrency" asp-route-currency="CHF" asp-route-returnUrl="@returnUrl">CHF</a>
+                        <a asp-controller="Preferences" asp-action="SetCurrency" asp-route-currency="USD" asp-route-returnUrl="@returnUrl">USD</a>
+                    </div>
+                </div>
+
+                <a class="account-link" href="#">Mon compte</a>
+            </div>
+        </div>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - RolixSAEProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main role="main" class="page-wrapper">
+        @RenderBody()
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-shell">
+            <div class="brand">ROLIX</div>
+            <div class="footer-links">
+                <a href="#">Politique de confidentialité</a>
+                <a href="#">Conditions générales</a>
+                <a href="#">Contact</a>
+            </div>
+            <p class="footer-copy">© 2025 Rolix. Tous droits réservés.</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
