@@ -1,6 +1,9 @@
 @model IEnumerable<RolixSAEProject.Models.Produit>
+
 @{
     ViewData["Title"] = "Accueil";
+    var currency = (ViewData["Currency"] as string) ?? "EUR";
+    var symbol = (ViewData["CurrencySymbol"] as string) ?? "€";
 }
 
 <div class="page-hero">
@@ -21,8 +24,8 @@
             @foreach (var produit in Model)
             {
                 var imageUrl = string.IsNullOrWhiteSpace(produit.ImageUrl)
-                    ? Url.Content("~/images/placeholder-watch.svg")
-                    : produit.ImageUrl;
+                ? Url.Content("~/images/placeholder-watch.svg")
+                : produit.ImageUrl;
 
                 <article class="product-card">
                     <div class="product-image-wrapper">
@@ -31,8 +34,15 @@
                     <div class="product-infos">
                         <div class="product-title">@produit.Nom</div>
                         <div class="product-meta">@produit.Collection</div>
-                        <div class="product-price">@produit.PrixEUR.ToString("N2") €</div>
-                        <a class="button button-outline" asp-controller="Produits" asp-action="Details" asp-route-id="@produit.Id">
+
+                        <div class="product-price">
+                            @produit.GetPrice(currency).ToString("N2") @symbol
+                        </div>
+
+                        <a class="button button-outline"
+                           asp-controller="Produits"
+                           asp-action="Details"
+                           asp-route-id="@produit.Id">
                             Voir le détail
                         </a>
                     </div>

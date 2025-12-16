@@ -7,32 +7,24 @@ namespace RolixSAEProject.Controllers
     public class PreferencesController : Controller
     {
         [HttpGet]
-        public IActionResult SetCurrency(string currency, string? returnUrl)
+        public IActionResult SetCurrency(string currency, string? returnUrl = null)
         {
-            var normalized = NormalizeCurrency(currency);
+            currency = (currency ?? "EUR").ToUpperInvariant();
+            if (currency != "EUR" && currency != "CHF" && currency != "USD")
+                currency = "EUR";
 
-            Response.Cookies.Append("Currency", normalized, new CookieOptions
+            Response.Cookies.Append("Currency", currency, new CookieOptions
             {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                Path = "/",
                 IsEssential = true,
-                Expires = DateTimeOffset.UtcNow.AddYears(1)
+                SameSite = SameSiteMode.Lax
             });
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
                 return Redirect(returnUrl);
-            }
 
-            return RedirectToAction("Index", "Home");
-        }
-
-        private static string NormalizeCurrency(string currency)
-        {
-            return currency switch
-            {
-                "CHF" => "CHF",
-                "USD" => "USD",
-                _ => "EUR"
-            };
+            return RedirectToAction("Index", "Produits");
         }
     }
 }

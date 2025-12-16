@@ -1,9 +1,13 @@
+using RolixSAEProject.Filters;
 using RolixSAEProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<CurrencyViewDataFilter>();
+});
 
 // Service Dataverse disponible en injection dans les contrôleurs
 builder.Services.AddSingleton<DataverseService>();
