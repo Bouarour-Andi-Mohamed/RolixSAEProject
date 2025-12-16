@@ -2,6 +2,13 @@
 
 @{
     ViewData["Title"] = "Liste des produits";
+    var currency = ViewBag.CurrentCurrency as string ?? "EUR";
+    var symbol = currency switch
+    {
+        "CHF" => "CHF",
+        "USD" => "$",
+        _ => "€"
+    };
 }
 
 <h1 class="mt-4 mb-3">Nos montres Rolix</h1>
@@ -96,7 +103,7 @@
             <th>Nom</th>
             <th>Catégorie</th>
             <th>Collection</th>
-            <th>Prix (EUR)</th>
+            <th>Prix (@currency)</th>
             <th></th>
         </tr>
     </thead>
@@ -111,7 +118,7 @@
                 </td>
                 <td>@p.Categorie</td>
                 <td>@p.Collection</td>
-                <td>@p.PrixEUR.ToString("N0") €</td>
+                <td>@p.GetPrice(currency).ToString("N0") @symbol</td>
                 <td>
                     <a class="btn btn-sm btn-outline-primary"
                        asp-controller="Produits"
