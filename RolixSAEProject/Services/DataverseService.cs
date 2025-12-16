@@ -29,9 +29,74 @@ namespace RolixSAEProject.Services
 
         private ServiceClient Client => _client;
 
+        private Guid? ResolvePriceListId(string priceListName)
+        {
+            var priceListQuery = new QueryExpression("pricelevel")
+            {
+                ColumnSet = new ColumnSet("pricelevelid"),
+                Criteria =
+                {
+                    Conditions =
+                    {
+                        new ConditionExpression("name", ConditionOperator.Equal, priceListName)
+                    }
+                }
+            };
+
+            var priceListResult = Client.RetrieveMultiple(priceListQuery);
+            if (priceListResult.Entities.Count > 0)
+            {
+                return priceListResult.Entities[0].Id;
+            }
+
+            return null;
+        }
+
+        private Dictionary<Guid, decimal> LoadPricesForList(Guid priceListId)
+        {
+            var prices = new Dictionary<Guid, decimal>();
+
+            var productPriceQuery = new QueryExpression("productpricelevel")
+            {
+                ColumnSet = new ColumnSet("productid", "pricelevelid", "amount"),
+                Criteria =
+                {
+                    Conditions =
+                    {
+                        new ConditionExpression("pricelevelid", ConditionOperator.Equal, priceListId)
+                    }
+                }
+            };
+
+            var productPriceResult = Client.RetrieveMultiple(productPriceQuery);
+
+            foreach (var pp in productPriceResult.Entities)
+            {
+                var productRef = pp.GetAttributeValue<EntityReference>("productid");
+                var amount = pp.GetAttributeValue<Money>("amount");
+
+                if (productRef != null && amount != null)
+                {
+                    prices[productRef.Id] = amount.Value;
+                }
+            }
+
+            return prices;
+        }
+
+        private static decimal TryGetPrice(Dictionary<string, Dictionary<Guid, decimal>> priceByCurrency, string currency, Guid productId)
+        {
+            if (priceByCurrency.TryGetValue(currency, out var prices) && prices.TryGetValue(productId, out var amount))
+            {
+                return amount;
+            }
+
+            return 0m;
+        }
+
         /// <summary>
         /// Retourne la liste des produits dont le parent est "Rolix",
-        /// avec description et prix EUR (price list "Tarifications en France").
+        /// avec description et prix pour les différentes devises disponibles.
         /// </summary>
         public List<Produit> GetProduitsRolix()
         {
@@ -43,60 +108,21 @@ namespace RolixSAEProject.Services
             // 1) Nom logique exact de ta table Produit
             const string productTable = "product"; // ex : "product" ou "crda6_produit"
 
-            // ------------------------------------------------------------
-            // 1. Récupérer l'ID de la price list "Tarifications en France"
-            // ------------------------------------------------------------
-            Guid? francePriceListId = null;
-
-            var priceListQuery = new QueryExpression("pricelevel")
+            var priceLists = new Dictionary<string, string>
             {
-                ColumnSet = new ColumnSet("pricelevelid"),
-                Criteria =
-                {
-                    Conditions =
-                    {
-                        new ConditionExpression("name", ConditionOperator.Equal, "Tarifications en EUR")
-                    }
-                }
+                { "EUR", "Tarifications en EUR" },
+                { "CHF", "Tarification en CHF" },
+                { "USD", "Tarification US" }
             };
 
-            var priceListResult = Client.RetrieveMultiple(priceListQuery);
-            if (priceListResult.Entities.Count > 0)
+            var priceByCurrency = new Dictionary<string, Dictionary<Guid, decimal>>();
+
+            foreach (var kvp in priceLists)
             {
-                francePriceListId = priceListResult.Entities[0].Id;
-            }
-
-            // ------------------------------------------------------------
-            // 2. Récupérer les montants de chaque produit pour cette price list
-            // ------------------------------------------------------------
-            var priceByProductId = new Dictionary<Guid, decimal>();
-
-            if (francePriceListId.HasValue)
-            {
-                var productPriceQuery = new QueryExpression("productpricelevel")
-                {
-                    ColumnSet = new ColumnSet("productid", "pricelevelid", "amount"),
-                    Criteria =
-                    {
-                        Conditions =
-                        {
-                            new ConditionExpression("pricelevelid", ConditionOperator.Equal, francePriceListId.Value)
-                        }
-                    }
-                };
-
-                var productPriceResult = Client.RetrieveMultiple(productPriceQuery);
-
-                foreach (var pp in productPriceResult.Entities)
-                {
-                    var productRef = pp.GetAttributeValue<EntityReference>("productid");
-                    var amount = pp.GetAttributeValue<Money>("amount");
-
-                    if (productRef != null && amount != null)
-                    {
-                        priceByProductId[productRef.Id] = amount.Value;
-                    }
-                }
+                var priceListId = ResolvePriceListId(kvp.Value);
+                priceByCurrency[kvp.Key] = priceListId.HasValue
+                    ? LoadPricesForList(priceListId.Value)
+                    : new Dictionary<Guid, decimal>();
             }
 
             // ------------------------------------------------------------
@@ -180,12 +206,9 @@ namespace RolixSAEProject.Services
                     // --- Description ---
                     string description = e.GetAttributeValue<string>("description") ?? string.Empty;
 
-                    // --- Prix : depuis productpricelevel / Tarifications en France ---
-                    decimal prix = 0m;
-                    if (priceByProductId.TryGetValue(e.Id, out var prixTrouve))
-                    {
-                        prix = prixTrouve;
-                    }
+                    decimal prixEUR = TryGetPrice(priceByCurrency, "EUR", e.Id);
+                    decimal prixCHF = TryGetPrice(priceByCurrency, "CHF", e.Id);
+                    decimal prixUSD = TryGetPrice(priceByCurrency, "USD", e.Id);
 
                     return new Produit
                     {
@@ -193,7 +216,9 @@ namespace RolixSAEProject.Services
                         Nom = e.GetAttributeValue<string>("name") ?? string.Empty,
                         DescriptionFR = description,
                         ImageUrl = e.GetAttributeValue<string>("crda6_imageurl") ?? string.Empty,
-                        PrixEUR = prix,
+                        PrixEUR = prixEUR,
+                        PrixCHF = prixCHF,
+                        PrixUSD = prixUSD,
                         Categorie = categorieTexte,
                         Collection = collectionTexte,
                         Genre = genreTexte

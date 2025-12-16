@@ -37,6 +37,18 @@ namespace RolixSAEProject.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        private string ResolveCurrency()
+        {
+            var selected = Request.Cookies["Currency"];
+
+            return selected switch
+            {
+                "CHF" => "CHF",
+                "USD" => "USD",
+                _ => "EUR"
+            };
+        }
     }
 
 
