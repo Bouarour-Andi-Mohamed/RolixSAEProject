@@ -55,7 +55,7 @@ namespace RolixSAEProject.Services
                 {
                     Conditions =
                     {
-                        new ConditionExpression("name", ConditionOperator.Equal, "Tarifications en France")
+                        new ConditionExpression("name", ConditionOperator.Equal, "Tarifications en EUR")
                     }
                 }
             };
