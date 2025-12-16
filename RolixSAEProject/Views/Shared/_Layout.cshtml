@@ -24,7 +24,7 @@
             <nav class="header-nav">
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : string.Empty)" asp-controller="Home" asp-action="Index">Accueil</a>
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Produits" ? "active" : string.Empty)" asp-controller="Produits" asp-action="Index">Nos produits</a>
-                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Notre entreprise</a>
+                <a class="nav-link" asp-controller="Home" asp-action="AboutUs">Notre entreprise</a>
             </nav>
 
             <div class="header-actions">

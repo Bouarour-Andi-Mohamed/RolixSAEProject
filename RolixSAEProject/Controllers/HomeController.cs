@@ -27,7 +27,7 @@ namespace RolixSAEProject.Controllers
             return View(produits);
         }
 
-        public IActionResult Privacy()
+        public IActionResult AboutUs()
         {
             return View();
         }
