@@ -16,6 +16,7 @@ namespace RolixSAEProject.Controllers
         // GET: /Produits
         public IActionResult Index(string? search, string? categorie, string? collection, string? genre, string? sort)
         {
+            var currency = ResolveCurrency();
             var produits = _dataverseService.GetProduitsRolix();
 
             // Recherche
@@ -54,8 +55,8 @@ namespace RolixSAEProject.Controllers
             // ⬆⬇ Tri prix
             produits = sort switch
             {
-                "price_desc" => produits.OrderByDescending(p => p.PrixEUR).ToList(),
-                "price_asc" => produits.OrderBy(p => p.PrixEUR).ToList(),
+                "price_desc" => produits.OrderByDescending(p => p.GetPrice(currency)).ToList(),
+                "price_asc" => produits.OrderBy(p => p.GetPrice(currency)).ToList(),
                 _ => produits.OrderBy(p => p.Nom).ToList()
             };
 
@@ -69,6 +70,7 @@ namespace RolixSAEProject.Controllers
             ViewBag.CurrentCollection = collection;
             ViewBag.CurrentGenre = genre;
             ViewBag.CurrentSort = sort;
+            ViewBag.CurrentCurrency = currency;
 
             return View(produits);
         }
@@ -77,6 +79,7 @@ namespace RolixSAEProject.Controllers
         // GET: /Produits/Details/1
         public IActionResult Details(int id)
         {
+            var currency = ResolveCurrency();
             var produit = _dataverseService.GetProduitRolixById(id);
 
             if (produit == null)
@@ -84,7 +87,20 @@ namespace RolixSAEProject.Controllers
                 return NotFound();
             }
 
+            ViewBag.CurrentCurrency = currency;
             return View(produit);
+        }
+
+        private string ResolveCurrency()
+        {
+            var selected = Request.Cookies["Currency"];
+
+            return selected switch
+            {
+                "CHF" => "CHF",
+                "USD" => "USD",
+                _ => "EUR"
+            };
         }
     }
 }

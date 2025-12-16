@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RolixSAEProject.Models;
-using Microsoft.PowerPlatform.Dataverse.Client;
-using Microsoft.Xrm.Sdk.Query;
+using RolixSAEProject.Services;
 
 
 namespace RolixSAEProject.Controllers
@@ -10,15 +9,24 @@ namespace RolixSAEProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DataverseService _dataverseService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DataverseService dataverseService)
         {
             _logger = logger;
+            _dataverseService = dataverseService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var currency = ResolveCurrency();
+            var produits = _dataverseService
+                .GetProduitsRolix()
+                .Take(3)
+                .ToList();
+
+            ViewBag.CurrentCurrency = currency;
+            return View(produits);
         }
 
         public IActionResult Privacy()
@@ -30,6 +38,18 @@ namespace RolixSAEProject.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private string ResolveCurrency()
+        {
+            var selected = Request.Cookies["Currency"];
+
+            return selected switch
+            {
+                "CHF" => "CHF",
+                "USD" => "USD",
+                _ => "EUR"
+            };
         }
     }
 

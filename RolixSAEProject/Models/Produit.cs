@@ -9,6 +9,8 @@ namespace RolixSAEProject.Models
         public string Reference { get; set; } = string.Empty;
 
         public decimal PrixEUR { get; set; }
+        public decimal PrixCHF { get; set; }
+        public decimal PrixUSD { get; set; }
 
         public string DescriptionFR { get; set; } = string.Empty;
         public string DescriptionEN { get; set; } = string.Empty;
@@ -23,5 +25,15 @@ namespace RolixSAEProject.Models
 
         // Genre : Femme / Homme / Unisex
         public string Genre { get; set; } = string.Empty;
+
+        public decimal GetPrice(string currency)
+        {
+            return currency switch
+            {
+                "CHF" => PrixCHF,
+                "USD" => PrixUSD,
+                _ => PrixEUR
+            };
+        }
     }
 }
