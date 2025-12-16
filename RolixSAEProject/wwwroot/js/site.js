@@ -93,3 +93,43 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+// ===== Auto-apply filters on Produits/Index =====
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("filtersForm");
+    if (!form) return;
+
+    const submitNow = () => {
+        // si un bouton type=submit a le focus, on évite les soucis en "forçant" submit
+        if (form.requestSubmit) form.requestSubmit();
+        else form.submit();
+    };
+
+    // Auto submit sur selects
+    form.querySelectorAll("select").forEach((sel) => {
+        sel.addEventListener("change", () => {
+            submitNow();
+        });
+    });
+
+    // Auto submit sur search avec debounce
+    const search = form.querySelector('input[name="search"]');
+    if (search) {
+        let t;
+        search.addEventListener("input", () => {
+            clearTimeout(t);
+            t = setTimeout(() => {
+                submitNow();
+            }, 350);
+        });
+
+        // Enter = submit direct
+        search.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                submitNow();
+            }
+        });
+    }
+
+    // Prix ↑ / ↓ : déjà type="submit" donc OK (aucune modif nécessaire)
+});

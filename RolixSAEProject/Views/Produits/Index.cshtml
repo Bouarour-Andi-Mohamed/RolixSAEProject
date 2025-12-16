@@ -29,7 +29,7 @@
 
     <div class="products-divider"></div>
 
-    <form method="get" asp-controller="Produits" asp-action="Index" class="filters-card">
+    <form id="filtersForm" method="get" asp-controller="Produits" asp-action="Index" class="filters-card">
         <div class="filters-row">
 
             <div class="field">
@@ -103,12 +103,6 @@
                         Prix ↓
                     </button>
                 </div>
-            </div>
-
-            <div class="field field-apply">
-                <button id="applyBtn" type="submit" class="button">
-                    Appliquer
-                </button>
             </div>
 
         </div>
