@@ -10,11 +10,14 @@ namespace RolixSAEProject.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataverseService _dataverseService;
+        private readonly SiteContentService _siteContentService;
 
-        public HomeController(ILogger<HomeController> logger, DataverseService dataverseService)
+        public HomeController(ILogger<HomeController> logger, DataverseService dataverseService, SiteContentService siteContentService)
         {
             _logger = logger;
             _dataverseService = dataverseService;
+            _siteContentService = siteContentService;
+
         }
 
         public IActionResult Index()
@@ -29,8 +32,10 @@ namespace RolixSAEProject.Controllers
 
         public IActionResult AboutUs()
         {
-            return View();
+            var model = _siteContentService.GetAboutUsPage("about-us") ?? new AboutUsPage();
+            return View(model);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

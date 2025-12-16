@@ -11,6 +11,8 @@ builder.Services.AddControllersWithViews(options =>
 
 // Service Dataverse disponible en injection dans les contrôleurs
 builder.Services.AddSingleton<DataverseService>();
+builder.Services.AddSingleton<SiteContentService>();
+
 
 var app = builder.Build();
 
