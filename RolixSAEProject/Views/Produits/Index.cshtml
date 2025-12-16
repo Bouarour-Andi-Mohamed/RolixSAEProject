@@ -1,0 +1,127 @@
+﻿@model IEnumerable<RolixSAEProject.Models.Produit>
+
+@{
+    ViewData["Title"] = "Liste des produits";
+}
+
+<h1 class="mt-4 mb-3">Nos montres Rolix</h1>
+
+<form method="get" asp-controller="Produits" asp-action="Index" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label for="search" class="form-label">Recherche</label>
+        <input type="text"
+               class="form-control"
+               id="search"
+               name="search"
+               value="@ViewBag.CurrentSearch"
+               placeholder="Nom de la montre..." />
+    </div>
+
+    <div class="col-md-3">
+        <label for="categorie" class="form-label">Catégorie</label>
+        <select id="categorie" name="categorie" class="form-select">
+            <option value="all">Toutes</option>
+            @if (ViewBag.Categories != null)
+            {
+                foreach (string cat in (IEnumerable<string>)ViewBag.Categories)
+                {
+                    bool isSelected = (string?)ViewBag.CurrentCategorie == cat;
+                    <option value="@cat" selected="@(isSelected ? "selected" : null)">@cat</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label for="collection" class="form-label">Collection</label>
+        <select id="collection" name="collection" class="form-select">
+            <option value="all">Toutes</option>
+            @if (ViewBag.Collections != null)
+            {
+                foreach (string col in (IEnumerable<string>)ViewBag.Collections)
+                {
+                    bool isSelected = (string?)ViewBag.CurrentCollection == col;
+                    <option value="@col" selected="@(isSelected ? "selected" : null)">@col</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label for="genre" class="form-label">Genre</label>
+        <select id="genre" name="genre" class="form-select">
+            <option value="all">Tous</option>
+            @if (ViewBag.Genres != null)
+            {
+                foreach (string g in (IEnumerable<string>)ViewBag.Genres)
+                {
+                    bool isSelected = (string?)ViewBag.CurrentGenre == g;
+                    <option value="@g" selected="@(isSelected ? "selected" : null)">@g</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-md-12 d-flex align-items-end">
+        <div class="btn-group me-2" role="group">
+            <button type="submit"
+                    name="sort"
+                    value="price_asc"
+                    class="btn btn-outline-secondary @(ViewBag.CurrentSort == "price_asc" ? "active" : "")">
+                Prix ↑
+            </button>
+            <button type="submit"
+                    name="sort"
+                    value="price_desc"
+                    class="btn btn-outline-secondary @(ViewBag.CurrentSort == "price_desc" ? "active" : "")">
+                Prix ↓
+            </button>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Appliquer
+        </button>
+    </div>
+</form>
+
+
+
+<p class="text-muted">
+    Catalogue connecté à Dataverse (environnement sandbox).
+</p>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Collection</th>
+            <th>Prix (EUR)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Produits" asp-action="Details" asp-route-id="@p.Id">
+                        @p.Nom
+                    </a>
+                </td>
+                <td>@p.Categorie</td>
+                <td>@p.Collection</td>
+                <td>@p.PrixEUR.ToString("N0") €</td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary"
+                       asp-controller="Produits"
+                       asp-action="Details"
+                       asp-route-id="@p.Id">
+                        Voir le détail
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
