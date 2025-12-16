@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RolixSAEProject.Models;
-using Microsoft.PowerPlatform.Dataverse.Client;
-using Microsoft.Xrm.Sdk.Query;
+using RolixSAEProject.Services;
 
 
 namespace RolixSAEProject.Controllers
@@ -10,15 +9,22 @@ namespace RolixSAEProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DataverseService _dataverseService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DataverseService dataverseService)
         {
             _logger = logger;
+            _dataverseService = dataverseService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var produits = _dataverseService
+                .GetProduitsRolix()
+                .Take(3)
+                .ToList();
+
+            return View(produits);
         }
 
         public IActionResult Privacy()
