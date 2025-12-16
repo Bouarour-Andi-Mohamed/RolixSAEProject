@@ -4,51 +4,92 @@
 // Write your JavaScript code.
 
 document.addEventListener("DOMContentLoaded", () => {
-    const currencySwitch = document.querySelector(".currency-switch");
-    const currencyButton = currencySwitch?.querySelector(".currency-button");
-    const currencyMenu = currencySwitch?.querySelector(".currency-menu");
+    const dropdown = document.querySelector('[data-dropdown="currency"]');
+    if (!dropdown) return;
 
-    if (!currencySwitch || !currencyButton || !currencyMenu) {
-        return;
-    }
+    const button = dropdown.querySelector(".currency-button");
+    const menu = dropdown.querySelector(".currency-menu");
+    const items = Array.from(dropdown.querySelectorAll(".currency-item"))
+        .filter(a => a.getAttribute("aria-disabled") !== "true");
 
-    const closeMenu = () => {
-        currencySwitch.classList.remove("open");
-        currencyButton.setAttribute("aria-expanded", "false");
+    const open = () => {
+        dropdown.classList.add("is-open");
+        button.setAttribute("aria-expanded", "true");
     };
-    const openMenu = () => {
-        currencySwitch.classList.add("open");
-        currencyButton.setAttribute("aria-expanded", "true");
+
+    const close = () => {
+        dropdown.classList.remove("is-open");
+        button.setAttribute("aria-expanded", "false");
     };
-    const toggleMenu = () => {
-        if (currencySwitch.classList.contains("open")) {
-            closeMenu();
-        } else {
-            openMenu();
+
+    const toggle = () => {
+        const isOpen = dropdown.classList.contains("is-open");
+        isOpen ? close() : open();
+    };
+
+    const focusItem = (index) => {
+        if (!items.length) return;
+        const i = (index + items.length) % items.length;
+        items[i].focus();
+    };
+
+    // Toggle click
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggle();
+    });
+
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target)) close();
+    });
+
+    // Close on Escape
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            close();
+            button.focus();
         }
-    };
-
-    currencyButton.addEventListener("click", (event) => {
-        event.preventDefault();
-        toggleMenu();
     });
 
-    currencyMenu.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", () => {
-            closeMenu();
-        });
-    });
+    // Keyboard navigation
+    dropdown.addEventListener("keydown", (e) => {
+        const isOpen = dropdown.classList.contains("is-open");
 
-    document.addEventListener("click", (event) => {
-        if (!currencySwitch.contains(event.target)) {
-            closeMenu();
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (!isOpen) open();
+            const idx = items.indexOf(document.activeElement);
+            focusItem(idx === -1 ? 0 : idx + 1);
+        }
+
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (!isOpen) open();
+            const idx = items.indexOf(document.activeElement);
+            focusItem(idx === -1 ? items.length - 1 : idx - 1);
+        }
+
+        if (e.key === "Enter" && isOpen && document.activeElement?.classList?.contains("currency-item")) {
+            // Let the link navigate naturally
+            close();
+        }
+
+        if (e.key === "Tab" && isOpen) {
+            // If tabbing out of the dropdown, close it
+            // small delay so focus can move first
+            setTimeout(() => {
+                if (!dropdown.contains(document.activeElement)) close();
+            }, 0);
         }
     });
 
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            closeMenu();
-            currencyButton.focus();
+    // If menu opens, focus first available item
+    button.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            open();
+            focusItem(0);
         }
     });
 });

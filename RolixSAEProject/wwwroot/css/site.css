@@ -354,3 +354,116 @@ button {
     align-items: flex-start;
   }
 }
+
+/* --- Currency dropdown: small, white, modern --- */
+.currency-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.currency-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,.12);
+    background: #fff;
+    color: #111;
+    cursor: pointer;
+    line-height: 1;
+    transition: background .12s ease, border-color .12s ease, transform .08s ease;
+}
+
+    .currency-button:hover {
+        background: rgba(0,0,0,.02);
+        border-color: rgba(0,0,0,.18);
+    }
+
+    .currency-button:active {
+        transform: translateY(1px);
+    }
+
+    .currency-button:focus-visible {
+        outline: 2px solid rgba(0,0,0,.28);
+        outline-offset: 2px;
+    }
+
+.currency-code {
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: .2px;
+}
+
+.currency-switch .chevron {
+    font-size: 11px;
+    opacity: .75;
+    transition: transform .12s ease;
+}
+
+.currency-switch.is-open .chevron {
+    transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.currency-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 150px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,.12);
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(0,0,0,.10);
+    display: none;
+    z-index: 2000;
+}
+
+.currency-switch.is-open .currency-menu {
+    display: block;
+    animation: currencyDropIn .10s ease-out;
+}
+
+@keyframes currencyDropIn {
+    from {
+        transform: translateY(-4px);
+        opacity: .7;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.currency-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    color: #111;
+    text-decoration: none;
+    font-size: 13px;
+    transition: background .10s ease;
+}
+
+    .currency-item:hover {
+        background: rgba(0,0,0,.05);
+    }
+
+.currency-hint {
+    opacity: .7;
+    font-size: 12px;
+}
+
+/* Active / disabled */
+.currency-item.is-active,
+.currency-item[aria-disabled="true"] {
+    background: rgba(0,0,0,.03);
+    opacity: .55;
+    pointer-events: none;
+}

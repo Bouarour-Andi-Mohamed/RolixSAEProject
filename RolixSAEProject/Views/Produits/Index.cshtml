@@ -30,7 +30,7 @@
     <div class="products-divider"></div>
 
     <form method="get" asp-controller="Produits" asp-action="Index" class="filters-card">
-        <div class="filters-grid">
+        <div class="filters-row">
 
             <div class="field">
                 <label for="search">Recherche</label>
@@ -86,28 +86,31 @@
                 </select>
             </div>
 
-        </div>
+            <div class="field field-price">
+                <label>Prix</label>
+                <div class="sort-group" role="group" aria-label="Tri prix">
+                    <button type="submit"
+                            name="sort"
+                            value="price_asc"
+                            class="button button-outline @(ViewBag.CurrentSort == "price_asc" ? "active" : "")">
+                        Prix ↑
+                    </button>
 
-        <div class="filters-actions">
-            <div class="sort-group" role="group" aria-label="Tri prix">
-                <button type="submit"
-                        name="sort"
-                        value="price_asc"
-                        class="button button-outline @(ViewBag.CurrentSort == "price_asc" ? "active" : "")">
-                    Prix ↑
-                </button>
+                    <button type="submit"
+                            name="sort"
+                            value="price_desc"
+                            class="button button-outline @(ViewBag.CurrentSort == "price_desc" ? "active" : "")">
+                        Prix ↓
+                    </button>
+                </div>
+            </div>
 
-                <button type="submit"
-                        name="sort"
-                        value="price_desc"
-                        class="button button-outline @(ViewBag.CurrentSort == "price_desc" ? "active" : "")">
-                    Prix ↓
+            <div class="field field-apply">
+                <button id="applyBtn" type="submit" class="button">
+                    Appliquer
                 </button>
             </div>
 
-            <button type="submit" class="button">
-                Appliquer
-            </button>
         </div>
     </form>
 

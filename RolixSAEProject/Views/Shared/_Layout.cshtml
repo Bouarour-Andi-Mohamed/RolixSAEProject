@@ -34,26 +34,49 @@
                     <span class="language">EN</span>
                 </div>
 
-                <div class="currency-switch">
-                    <button type="button" class="currency-button">
-                        @currentCurrency <span class="chevron">▾</span>
+                <div class="currency-switch" data-dropdown="currency">
+                    <button type="button"
+                            class="currency-button"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-controls="currency-menu">
+                        <span class="currency-code">@currentCurrency</span>
+                        <span class="chevron" aria-hidden="true">▾</span>
                     </button>
 
-                    <div class="currency-menu">
-                        <a asp-controller="Preferences"
+                    <div id="currency-menu" class="currency-menu" role="menu" aria-label="Choisir une devise">
+                        <a role="menuitem"
+                           class="currency-item @(currentCurrency == "EUR" ? "is-active" : "")"
+                           asp-controller="Preferences"
                            asp-action="SetCurrency"
                            asp-route-currency="EUR"
-                           asp-route-returnUrl="@returnUrl">EUR</a>
+                           asp-route-returnUrl="@returnUrl"
+                           aria-disabled="@(currentCurrency == "EUR" ? "true" : "false")"
+                           tabindex="@(currentCurrency == "EUR" ? "-1" : "0")">
+                            EUR <span class="currency-hint">€</span>
+                        </a>
 
-                        <a asp-controller="Preferences"
+                        <a role="menuitem"
+                           class="currency-item @(currentCurrency == "CHF" ? "is-active" : "")"
+                           asp-controller="Preferences"
                            asp-action="SetCurrency"
                            asp-route-currency="CHF"
-                           asp-route-returnUrl="@returnUrl">CHF</a>
+                           asp-route-returnUrl="@returnUrl"
+                           aria-disabled="@(currentCurrency == "CHF" ? "true" : "false")"
+                           tabindex="@(currentCurrency == "CHF" ? "-1" : "0")">
+                            CHF <span class="currency-hint">CHF</span>
+                        </a>
 
-                        <a asp-controller="Preferences"
+                        <a role="menuitem"
+                           class="currency-item @(currentCurrency == "USD" ? "is-active" : "")"
+                           asp-controller="Preferences"
                            asp-action="SetCurrency"
                            asp-route-currency="USD"
-                           asp-route-returnUrl="@returnUrl">USD</a>
+                           asp-route-returnUrl="@returnUrl"
+                           aria-disabled="@(currentCurrency == "USD" ? "true" : "false")"
+                           tabindex="@(currentCurrency == "USD" ? "-1" : "0")">
+                            USD <span class="currency-hint">$</span>
+                        </a>
                     </div>
                 </div>
 
