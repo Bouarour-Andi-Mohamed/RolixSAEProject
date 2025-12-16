@@ -1,5 +1,9 @@
 ﻿@model RolixSAEProject.Models.Produit
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
+
 @{
     ViewData["Title"] = "Détail du produit";
     var currency = ViewBag.CurrentCurrency as string ?? "EUR";
@@ -9,47 +13,95 @@
         "USD" => "$",
         _ => "€"
     };
+
+    var imageUrl = !string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? Model.ImageUrl
+        : Url.Content("~/images/placeholder-watch.svg");
 }
 
-<h1 class="mt-4 mb-3">@Model.Nom</h1>
+<div class="details-shell">
 
-<div class="row">
-    <div class="col-md-8">
-        <dl class="row">
-            <dt class="col-sm-3">Collection</dt>
-            <dd class="col-sm-9">@Model.Collection</dd>
-
-            <dt class="col-sm-3">Prix (@currency)</dt>
-            <dd class="col-sm-9">@Model.GetPrice(currency).ToString("N0") @symbol</dd>
-
-            <dt class="col-sm-3">Description</dt>
-            <dd class="col-sm-9">@Model.DescriptionFR</dd>
-        </dl>
+    <div class="details-breadcrumb">
+        <a asp-controller="Produits" asp-action="Index">Produits</a>
+        <span> / </span>
+        <span>@Model.Nom</span>
     </div>
 
-    <div class="col-md-4">
-        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-        {
-            <img src="@Model.ImageUrl"
-                 alt="@Model.Nom"
-                 class="img-fluid mb-3" />
-        }
+    <div class="details-grid">
 
-        <div class="card border-primary">
-            <div class="card-body">
-                <h5 class="card-title">Demander un devis</h5>
-                <p class="card-text">
-                    Au Sprint 1, ce bouton est uniquement visuel.
-                    Il prépare la future fonctionnalité de demande de devis.
-                </p>
-                <button class="btn btn-primary" type="button">
-                    Demander un devis
-                </button>
-            </div>
+        <div class="details-media">
+            <img src="@imageUrl" alt="@Model.Nom" />
         </div>
 
-        <a asp-controller="Produits" asp-action="Index" class="btn btn-link mt-3">
-            &laquo; Retour à la liste
-        </a>
+        <div class="details-card">
+            <h1 class="details-title">@Model.Nom</h1>
+
+            <p class="details-ref">
+                Collection : @Model.Collection
+            </p>
+
+            <div class="details-price">
+                @Model.GetPrice(currency).ToString("N0") @symbol
+            </div>
+
+            <div class="details-divider"></div>
+
+            <h2 class="details-section-title">Description</h2>
+            <p class="details-text">
+                @Model.DescriptionFR
+            </p>
+
+            <div class="details-divider"></div>
+
+            <h2 class="details-section-title">Caractéristique principale</h2>
+
+            <div class="details-specs">
+                <div class="spec-row">
+                    <span class="spec-label">Mouvement</span>
+                    <span class="spec-value">Automatique</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Taille du boîtier</span>
+                    <span class="spec-value">41mm</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Matériau</span>
+                    <span class="spec-value">Acier</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Étanchéité</span>
+                    <span class="spec-value">200m</span>
+                </div>
+            </div>
+
+            <button class="details-cta" type="button">
+                Demander un devis
+            </button>
+
+            <a class="details-back" asp-controller="Produits" asp-action="Index">
+                &laquo; Retour à la liste
+            </a>
+        </div>
+
     </div>
+
+    <div class="details-bottom">
+        <h3 class="bottom-title">Caractéristiques détaillées</h3>
+
+        <div class="bottom-grid">
+            <div class="bottom-col">
+                <div><span class="k">Mouvement</span> Automatique</div>
+                <div><span class="k">Calibre</span> 3235</div>
+                <div><span class="k">Matériau</span> Acier</div>
+                <div><span class="k">Bracelet</span> Oyster</div>
+            </div>
+
+            <div class="bottom-col">
+                <div><span class="k">Taille</span> 41mm</div>
+                <div><span class="k">Étanchéité</span> 200m</div>
+                <div><span class="k">Verre</span> Saphir (loupe Cyclope)</div>
+            </div>
+        </div>
+    </div>
+
 </div>
