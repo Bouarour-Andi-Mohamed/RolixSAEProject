@@ -19,13 +19,11 @@ namespace RolixSAEProject.Controllers
 
         public IActionResult Index()
         {
-            var currency = ResolveCurrency();
             var produits = _dataverseService
                 .GetProduitsRolix()
                 .Take(3)
                 .ToList();
 
-            ViewBag.CurrentCurrency = currency;
             return View(produits);
         }
 
