@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
+
+@{
+    ViewData["Title"] = V["Contact_Title"];
+}
+
+<div class="container py-5">
+    <h1 class="mb-3">@V["Contact_Title"]</h1>
+    <p>@V["Contact_Intro"]</p>
+
+    <ul class="mb-0">
+        <li>@V["Contact_EmailLabel"] : <a href="mailto:contact@rolix.com">contact@rolix.com</a></li>
+    </ul>
+</div>

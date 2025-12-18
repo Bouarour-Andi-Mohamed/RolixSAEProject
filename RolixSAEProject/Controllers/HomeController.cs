@@ -36,6 +36,25 @@ namespace RolixSAEProject.Controllers
             return View(model);
         }
 
+        //Page confid entialite du home 
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        //Page mentions legales de home
+        public IActionResult Terms()
+        {
+            return View();
+        }
+
+        //Page contact du home
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -113,10 +113,11 @@
         <div class="footer-shell">
             <div class="brand">ROLIX</div>
             <div class="footer-links">
-                <a href="#">@L["Footer_Privacy"]</a>
-                <a href="#">@L["Footer_Terms"]</a>
-                <a href="#">@L["Footer_Contact"]</a>
+                <a asp-controller="Home" asp-action="Privacy">@L["Footer_Privacy"]</a>
+                <a asp-controller="Home" asp-action="Terms">@L["Footer_Terms"]</a>
+                <a asp-controller="Home" asp-action="Contact">@L["Footer_Contact"]</a>
             </div>
+
             <p class="footer-copy">@L["Footer_Copy"]</p>
         </div>
     </footer>
