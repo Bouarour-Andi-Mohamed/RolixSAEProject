@@ -1,7 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&display=swap");
 
 :root {
-    --font-brand: "Libre Baskerville", serif;
+    --font-brand: "Cormorant Garamond", serif; /* Titres / marque */
+    --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; /* Texte */
+
     --text-primary: #1f1f1f;
     --text-muted: #6b7280;
     --border-color: #e5e7eb;
@@ -10,18 +12,23 @@
 }
 
 html, body {
-    font-family: var(--font-brand);
+    font-family: var(--font-ui);
+    font-weight: 300;
     color: var(--text-primary);
     background: #fff;
 }
 
-/* (Optionnel) forcer sur les titres/brand */
+/* Titres / brand */
 .brand,
 .products-title,
 .hero-title,
-.section-title {
+.section-title,
+h1, h2, h3 {
     font-family: var(--font-brand);
+    font-weight: 600;
+    letter-spacing: 0.12em; /* tu peux laisser tes valeurs existantes si tu préfères */
 }
+
 
 a {
     color: inherit;
