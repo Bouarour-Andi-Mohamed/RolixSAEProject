@@ -1,11 +1,13 @@
 ﻿@model RolixSAEProject.Models.Produit
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
 
 @section Styles {
     <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
 
 @{
-    ViewData["Title"] = "Détail du produit";
+    ViewData["Title"] = V["ProductDetails_PageTitle"];
 
     var currency = ViewBag.CurrentCurrency as string ?? "EUR";
     var symbol = currency switch
@@ -32,20 +34,20 @@
     // Étanchéité est "texte une ligne" dans Dataverse => souvent string ("200")
     var etancheite = string.IsNullOrWhiteSpace(Model.EtancheiteM) ? "—" : $"{Model.EtancheiteM}m";
 
-    var loupeCyclope = Model.LoupeCyclope ? "Oui" : "Non";
+    var loupeCyclope = Model.LoupeCyclope ? V["Common_Yes"].Value : V["Common_No"].Value;
 
     // Pour "Saphir (loupe Cyclope)" dans la section détaillée
     var verreDetail = verre;
     if (Model.LoupeCyclope && verreDetail != "—")
     {
-        verreDetail = $"{verreDetail} (loupe Cyclope)";
+        verreDetail = $"{verreDetail} ({V["ProductDetails_CyclopsLabel"]})";
     }
 }
 
 <div class="details-shell">
 
     <div class="details-breadcrumb">
-        <a asp-controller="Produits" asp-action="Index">Produits</a>
+        <a asp-controller="Produits" asp-action="Index">@V["ProductDetails_BreadcrumbProducts"]</a>
         <span> / </span>
         <span>@Model.Nom</span>
     </div>
@@ -60,7 +62,7 @@
             <h1 class="details-title">@Model.Nom</h1>
 
             <p class="details-ref">
-                Collection : @Model.Collection
+                @V["ProductDetails_CollectionLabel"] : @Model.Collection
             </p>
 
             <div class="details-price">
@@ -69,61 +71,61 @@
 
             <div class="details-divider"></div>
 
-            <h2 class="details-section-title">Description</h2>
+            <h2 class="details-section-title">@V["ProductDetails_DescriptionTitle"]</h2>
             <p class="details-text">
                 @Model.DescriptionFR
             </p>
 
             <div class="details-divider"></div>
 
-            <h2 class="details-section-title">Caractéristique principale</h2>
+            <h2 class="details-section-title">@V["ProductDetails_MainSpecsTitle"]</h2>
 
             <div class="details-specs">
                 <div class="spec-row">
-                    <span class="spec-label">Mouvement</span>
+                    <span class="spec-label">@V["ProductDetails_Label_Movement"]</span>
                     <span class="spec-value">@mouvement</span>
                 </div>
                 <div class="spec-row">
-                    <span class="spec-label">Taille du boîtier</span>
+                    <span class="spec-label">@V["ProductDetails_Label_CaseSize"]</span>
                     <span class="spec-value">@tailleBoitier</span>
                 </div>
                 <div class="spec-row">
-                    <span class="spec-label">Matériau</span>
+                    <span class="spec-label">@V["ProductDetails_Label_Material"]</span>
                     <span class="spec-value">@materiau</span>
                 </div>
                 <div class="spec-row">
-                    <span class="spec-label">Étanchéité</span>
+                    <span class="spec-label">@V["ProductDetails_Label_WaterResistance"]</span>
                     <span class="spec-value">@etancheite</span>
                 </div>
             </div>
 
             <button class="details-cta" type="button">
-                Demander un devis
+                @V["ProductDetails_RequestQuote"]
             </button>
 
             <a class="details-back" asp-controller="Produits" asp-action="Index">
-                &laquo; Retour à la liste
+                &laquo; @V["ProductDetails_BackToList"]
             </a>
         </div>
 
     </div>
 
     <div class="details-bottom">
-        <h3 class="bottom-title">Caractéristiques détaillées</h3>
+        <h3 class="bottom-title">@V["ProductDetails_DetailedSpecsTitle"]</h3>
 
         <div class="bottom-grid">
             <div class="bottom-col">
-                <div><span class="k">Mouvement</span> @mouvement</div>
-                <div><span class="k">Calibre</span> @calibre</div>
-                <div><span class="k">Matériau</span> @materiau</div>
-                <div><span class="k">Bracelet</span> @bracelet</div>
+                <div><span class="k">@V["ProductDetails_Label_Movement"]</span> @mouvement</div>
+                <div><span class="k">@V["ProductDetails_Label_Caliber"]</span> @calibre</div>
+                <div><span class="k">@V["ProductDetails_Label_Material"]</span> @materiau</div>
+                <div><span class="k">@V["ProductDetails_Label_Bracelet"]</span> @bracelet</div>
             </div>
 
             <div class="bottom-col">
-                <div><span class="k">Taille</span> @tailleBoitier</div>
-                <div><span class="k">Étanchéité</span> @etancheite</div>
-                <div><span class="k">Verre</span> @verreDetail</div>
-                <div><span class="k">Loupe Cyclope</span> @loupeCyclope</div>
+                <div><span class="k">@V["ProductDetails_Label_Size"]</span> @tailleBoitier</div>
+                <div><span class="k">@V["ProductDetails_Label_WaterResistance"]</span> @etancheite</div>
+                <div><span class="k">@V["ProductDetails_Label_Glass"]</span> @verreDetail</div>
+                <div><span class="k">@V["ProductDetails_Label_Cyclops"]</span> @loupeCyclope</div>
             </div>
         </div>
     </div>

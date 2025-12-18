@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Localization;
 using RolixSAEProject.Models;
 using RolixSAEProject.Services;
+using System.Globalization;
 
 namespace RolixSAEProject.Controllers
 {
@@ -17,7 +19,10 @@ namespace RolixSAEProject.Controllers
         public IActionResult Index(string? search, string? categorie, string? collection, string? genre, string? sort)
         {
             var currency = ResolveCurrency();
-            var produits = _dataverseService.GetProduitsRolix();
+            var dataverseLang = ResolveDataverseLanguage(); // ✅ NEW
+
+            // ✅ NEW : on passe la langue à Dataverse (méthode avec param optionnel côté service)
+            var produits = _dataverseService.GetProduitsRolix(dataverseLang);
 
             // Recherche
             if (!string.IsNullOrWhiteSpace(search))
@@ -44,7 +49,7 @@ namespace RolixSAEProject.Controllers
                     .ToList();
             }
 
-            //Filtre Genre (Femme / Homme / Unisex)
+            // Filtre Genre (Femme / Homme / Unisex) -> en FR ou EN selon Dataverse
             if (!string.IsNullOrEmpty(genre) && genre != "all")
             {
                 produits = produits
@@ -63,7 +68,14 @@ namespace RolixSAEProject.Controllers
             // Listes pour les <select>
             ViewBag.Categories = new List<string> { "Édition limitée", "Collection Sport" };
             ViewBag.Collections = new List<string> { "Classic", "Pro" };
-            ViewBag.Genres = new List<string> { "Femme", "Homme", "Unisex" };
+
+            // ✅ NEW : plus en dur -> basé sur les labels renvoyés par Dataverse (donc FR/EN automatique)
+            ViewBag.Genres = produits
+                .Select(p => p.Genre)
+                .Where(g => !string.IsNullOrWhiteSpace(g))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(g => g)
+                .ToList();
 
             ViewBag.CurrentSearch = search;
             ViewBag.CurrentCategorie = categorie;
@@ -75,12 +87,14 @@ namespace RolixSAEProject.Controllers
             return View(produits);
         }
 
-
         // GET: /Produits/Details/1
         public IActionResult Details(int id)
         {
             var currency = ResolveCurrency();
-            var produit = _dataverseService.GetProduitRolixById(id);
+            var dataverseLang = ResolveDataverseLanguage(); // ✅ NEW
+
+            // ✅ NEW : langue passée à Dataverse
+            var produit = _dataverseService.GetProduitRolixById(id, dataverseLang);
 
             if (produit == null)
             {
@@ -101,6 +115,18 @@ namespace RolixSAEProject.Controllers
                 "USD" => "USD",
                 _ => "EUR"
             };
+        }
+
+        // ✅ NEW : on aligne la langue Dataverse sur la langue UI du site
+        private string ResolveDataverseLanguage()
+        {
+            var uiCulture =
+                HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture?.UICulture
+                ?? CultureInfo.CurrentUICulture;
+
+            return uiCulture.TwoLetterISOLanguageName.Equals("en", StringComparison.OrdinalIgnoreCase)
+                ? "en-US"
+                : "fr-FR";
         }
     }
 }
