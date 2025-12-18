@@ -67,8 +67,20 @@ namespace RolixSAEProject.Controllers
             };
 
             // Listes pour les <select>
-            ViewBag.Categories = new List<string> { "Édition limitée", "Collection Sport" };
-            ViewBag.Collections = new List<string> { "Classic", "Pro" };
+            ViewBag.Categories = produits
+             .Select(p => p.Categorie)
+             .Where(c => !string.IsNullOrWhiteSpace(c))
+             .Distinct(StringComparer.OrdinalIgnoreCase)
+             .OrderBy(c => c)
+             .ToList();
+
+            ViewBag.Collections = produits
+            .Select(p => p.Collection)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c)
+            .ToList();
+
 
             // ✅ NEW : plus en dur -> basé sur les labels renvoyés par Dataverse (donc FR/EN automatique)
             ViewBag.Genres = produits

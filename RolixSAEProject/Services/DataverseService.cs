@@ -259,31 +259,43 @@ namespace RolixSAEProject.Services
             var produits = produitsEntities
                 .Select((e, index) =>
                 {
-                    // Catégorie (laisser tel quel pour ne pas casser tes filtres en dur côté Controller)
+                    // ✅ Catégorie (TRAD comme Genre/Mouvement/etc.)
                     string categorieTexte = string.Empty;
                     var catOsv = e.GetAttributeValue<OptionSetValue>("crda6_categorie");
                     if (catOsv != null)
                     {
-                        categorieTexte = catOsv.Value switch
+                        // fallback FR (comportement actuel : zéro risque)
+                        var fallbackFr = catOsv.Value switch
                         {
                             0 => "Édition limitée",
                             1 => "Collection Sport",
                             _ => string.Empty
                         };
-                    }
 
-                    // Collection (laisser tel quel pour ne pas casser tes filtres en dur côté Controller)
+                        // si EN demandé -> label Dataverse (Limited Edition / Sport Collection)
+                        categorieTexte = (lcid == 1033)
+                            ? GetChoiceLabel(productTable, "crda6_categorie", catOsv.Value, lcid, fallbackFr)
+                            : fallbackFr;
+                    }
+                    // ✅ Collection (TRAD)
                     string collectionTexte = string.Empty;
                     var colOsv = e.GetAttributeValue<OptionSetValue>("crda6_collection");
                     if (colOsv != null)
                     {
-                        collectionTexte = colOsv.Value switch
+                        // fallback FR actuel (zéro risque)
+                        var fallbackFr = colOsv.Value switch
                         {
                             0 => "Classic",
                             1 => "Pro",
                             _ => string.Empty
                         };
+
+                        // si EN demandé -> label Dataverse (selon tes traductions)
+                        collectionTexte = (lcid == 1033)
+                            ? GetChoiceLabel(productTable, "crda6_collection", colOsv.Value, lcid, fallbackFr)
+                            : fallbackFr;
                     }
+
 
                     // ✅ Genre (TRAD)
                     string genreTexte = string.Empty;
