@@ -225,6 +225,7 @@ namespace RolixSAEProject.Services
                     "name",
                     "parentproductid",
                     "description",
+                    "crda6_descriptionen",
                     "crda6_categorie",
                     "crda6_collection",
                     "crda6_genre",
@@ -305,7 +306,21 @@ namespace RolixSAEProject.Services
                     }
 
                     // Description
-                    string description = e.GetAttributeValue<string>("description") ?? string.Empty;
+                    // Description (FR = description, EN = crda6_descriptionen)
+                    var descriptionFrRaw = e.GetAttributeValue<string>("description") ?? string.Empty;
+                    var descriptionEnRaw = e.GetAttributeValue<string>("crda6_descriptionen") ?? string.Empty;
+
+                    // Ce que l'UI doit afficher sans changer tes vues :
+                    // - si site en EN -> on affiche EN (sinon fallback FR)
+                    // - si site en FR -> on affiche FR (sinon fallback EN)
+                    var descriptionUi =
+                        (lcid == 1033)
+                            ? (!string.IsNullOrWhiteSpace(descriptionEnRaw) ? descriptionEnRaw : descriptionFrRaw)
+                            : (!string.IsNullOrWhiteSpace(descriptionFrRaw) ? descriptionFrRaw : descriptionEnRaw);
+
+                    // On garde quand même les 2 champs remplis proprement pour le reste de l'app
+                    var descriptionFr = !string.IsNullOrWhiteSpace(descriptionFrRaw) ? descriptionFrRaw : descriptionEnRaw;
+                    var descriptionEn = !string.IsNullOrWhiteSpace(descriptionEnRaw) ? descriptionEnRaw : descriptionFrRaw;
 
                     decimal prixEUR = TryGetPrice(priceByCurrency, "EUR", e.Id);
                     decimal prixCHF = TryGetPrice(priceByCurrency, "CHF", e.Id);
@@ -348,7 +363,9 @@ namespace RolixSAEProject.Services
                     {
                         Id = index + 1,
                         Nom = e.GetAttributeValue<string>("name") ?? string.Empty,
-                        DescriptionFR = description,
+                        DescriptionFR = descriptionUi,
+                        DescriptionEN = descriptionEn,
+
 
                         ImageUrl = e.GetAttributeValue<string>("crda6_imageurl") ?? string.Empty,
 

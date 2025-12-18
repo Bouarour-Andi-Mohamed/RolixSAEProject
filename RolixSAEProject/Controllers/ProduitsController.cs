@@ -57,6 +57,7 @@ namespace RolixSAEProject.Controllers
                     .ToList();
             }
 
+
             // ⬆⬇ Tri prix
             produits = sort switch
             {
