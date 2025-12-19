@@ -38,7 +38,13 @@ namespace RolixSAEProject.Controllers
                 // CORRECTION : "lead" sans le "s" pour Dataverse
                 await _dataverseService.CreateEntity("lead", leadData);
 
-                return RedirectToAction("Index", "Home");
+                TempData["SuccessMessage"] = "Votre message a bien été envoyé à l'équipe Rolix !";
+
+                // IMPORTANT : On recharge la vue Contact pour voir le message
+                return View("~/Views/Home/Contact.cshtml", new ContactForm());
+
+
+
             }
             // En cas d'erreur, on réaffiche bien la vue Contact
             return View("Contact", model);
