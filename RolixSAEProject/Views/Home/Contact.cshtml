@@ -6,14 +6,12 @@
     ViewData["Title"] = V["Contact_Title"];
 }
 
-@* Lien vers ton CSS dédié pour ne pas impacter les autres pages *@
 <link rel="stylesheet" href="~/css/contact.css" />
 
 <div class="container py-5">
     <h1 class="mb-4">@V["Contact_Title"]</h1>
     <p class="mb-5">@V["Contact_Intro"]</p>
 
-    @* Formulaire relié à ton nouveau ContactController *@
     <form asp-controller="Contact" asp-action="Submit" method="post" class="contact-form shadow p-4 rounded bg-light">
 
         <div class="row">
@@ -32,9 +30,10 @@
             <input asp-for="EMailAddress1" type="email" class="form-control" placeholder="email@exemple.com" required />
         </div>
 
+        @* Correction ici : suppression de la div mb-3 en trop qui entourait tout *@
         <div class="mb-3">
             <label class="form-label">@V["Subject_Label"] (Rubrique)</label>
-            <input asp-for="Description" class="form-control" placeholder="Sujet de votre demande" required />
+            <input asp-for="Message" class="form-control" placeholder="Sujet de votre demande" required />
         </div>
 
         <div class="mb-4">

@@ -126,4 +126,22 @@
   <data name="Contact_Title" xml:space="preserve">
     <value>Contact</value>
   </data>
+  <data name="Email_Label" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="First_Name" xml:space="preserve">
+    <value>Prénom</value>
+  </data>
+  <data name="Last_Name" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="Message_Label" xml:space="preserve">
+    <value>Message </value>
+  </data>
+  <data name="Send_Button" xml:space="preserve">
+    <value>Envoyer le message</value>
+  </data>
+  <data name="Subject_Label" xml:space="preserve">
+    <value>Rubrique</value>
+  </data>
 </root>
