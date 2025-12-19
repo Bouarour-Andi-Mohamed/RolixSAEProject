@@ -405,6 +405,49 @@ namespace RolixSAEProject.Services
             var produits = GetProduitsRolix(dataverseLanguage);
             return produits.FirstOrDefault(p => p.Id == id);
         }
+
+        /// <summary>
+        /// Vérifie les identifiants de connexion dans la table account.
+        /// </summary>
+        /// <param name="identifiant">Valeur du champ crda6_identifiant</param>
+        /// <param name="motDePasse">Valeur du champ crda6_motdepasse</param>
+        /// <returns>Un objet Compte si une correspondance est trouvée, sinon null.</returns>
+        public Compte? AuthentifierCompte(string identifiant, string motDePasse)
+        {
+            if (Client?.IsReady != true)
+            {
+                return null;
+            }
+
+            var query = new QueryExpression("account")
+            {
+                ColumnSet = new ColumnSet("accountid", "name", "crda6_identifiant", "crda6_motdepasse"),
+                Criteria =
+                {
+                    Conditions =
+                    {
+                        new ConditionExpression("crda6_identifiant", ConditionOperator.Equal, identifiant),
+                        new ConditionExpression("crda6_motdepasse", ConditionOperator.Equal, motDePasse)
+                    }
+                }
+            };
+
+            var result = Client.RetrieveMultiple(query);
+            var entity = result.Entities.FirstOrDefault();
+
+            if (entity == null)
+            {
+                return null;
+            }
+
+            return new Compte
+            {
+                Id = entity.Id,
+                Identifiant = entity.GetAttributeValue<string>("crda6_identifiant")
+                              ?? entity.GetAttributeValue<string>("name")
+                              ?? string.Empty
+            };
+        }
     }
 }
 

@@ -130,7 +130,7 @@ namespace RolixSAEProject.Controllers
             };
         }
 
-        // ✅ NEW : on aligne la langue Dataverse sur la langue UI du site
+        //  NEW : on aligne la langue Dataverse sur la langue UI du site
         private string ResolveDataverseLanguage()
         {
             var uiCulture =

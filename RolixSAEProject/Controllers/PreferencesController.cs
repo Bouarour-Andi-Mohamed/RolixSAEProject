@@ -31,7 +31,7 @@ namespace RolixSAEProject.Controllers
         [HttpGet]
         public IActionResult SetLanguage(string culture, string? returnUrl = null)
         {
-            // sécurité minimale
+            // sÃ©curitÃ© minimale
             culture = (culture == "en") ? "en" : "fr";
 
             Response.Cookies.Append(

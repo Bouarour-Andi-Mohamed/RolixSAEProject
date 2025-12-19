@@ -7,7 +7,7 @@ using RolixSAEProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Localisation (RESX) — dossier Resources
+// Localisation (RESX) â€” dossier Resources
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // MVC + filtre devise
@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews(options =>
 })
 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
-// UN SEUL ServiceClient (partagé par tout le site)
+// UN SEUL ServiceClient (partagÃ© par tout le site)
 builder.Services.AddSingleton<ServiceClient>(sp =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -27,7 +27,7 @@ builder.Services.AddSingleton<ServiceClient>(sp =>
     var clientSecret = cfg["Dataverse:ClientSecret"];
     var tenantId = cfg["Dataverse:TenantId"];
 
-    // Si ClientSecret est renseigné => pas de popup login (le plus clean)
+    // Si ClientSecret est renseignÃ© => pas de popup login (le plus clean)
     var hasClientSecret =
         !string.IsNullOrWhiteSpace(clientId) && clientId != "<A REMPLACER PLUS TARD>" &&
         !string.IsNullOrWhiteSpace(clientSecret) && clientSecret != "<A REMPLACER PLUS TARD>";
@@ -57,13 +57,13 @@ builder.Services.AddSingleton<ServiceClient>(sp =>
     return new ServiceClient(connStr);
 });
 
-// Services qui utilisent le même client
+// Services qui utilisent le mÃªme client
 builder.Services.AddSingleton<DataverseService>();
 builder.Services.AddSingleton<SiteContentService>();
 
 var app = builder.Build();
 
-// Localisation middleware (FR par défaut)
+// Localisation middleware (FR par dÃ©faut)
 var supportedCultures = new[] { new CultureInfo("fr"), new CultureInfo("en") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
@@ -84,6 +84,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
