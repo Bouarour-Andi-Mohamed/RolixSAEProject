@@ -7,8 +7,6 @@ using RolixSAEProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<CustomerAuthService>();
-
 // Localisation (RESX) — dossier Resources
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -20,16 +18,16 @@ builder.Services.AddControllersWithViews(options =>
 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
 // ✅ SESSION (obligatoire si tu fais app.UseSession())
-builder.Services.AddDistributedMemoryCache(); // fournit IDistributedCache -> ISessionStore
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(2);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;   // utile si tu as un consentement cookies
+    options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
-// UN SEUL ServiceClient (partagé par tout le site)
+// ✅ UN SEUL ServiceClient (partagé par tout le site)
 builder.Services.AddSingleton<ServiceClient>(sp =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -56,6 +54,7 @@ builder.Services.AddSingleton<ServiceClient>(sp =>
     }
     else
     {
+        // Fallback DEV: OAuth interactif
         connStr =
             $"AuthType=OAuth;" +
             $"Url={url};" +
@@ -67,9 +66,10 @@ builder.Services.AddSingleton<ServiceClient>(sp =>
     return new ServiceClient(connStr);
 });
 
-// Services qui utilisent le même client
+// Services Dataverse (tous utilisent le même ServiceClient)
 builder.Services.AddSingleton<DataverseService>();
 builder.Services.AddSingleton<SiteContentService>();
+builder.Services.AddSingleton<CustomerAccountService>();
 
 var app = builder.Build();
 
@@ -93,7 +93,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ✅ Session doit être avant Authorization / endpoints
+// ✅ Session avant endpoints
 app.UseSession();
 
 app.UseAuthorization();

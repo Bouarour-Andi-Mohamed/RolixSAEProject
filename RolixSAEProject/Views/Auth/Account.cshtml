@@ -1,0 +1,26 @@
+@model RolixSAEProject.Models.AccountProfile
+
+@{
+    ViewData["Title"] = "Mon compte";
+}
+
+<div class="page-wrapper">
+    <div class="page-hero">
+        <div class="section-divider"></div>
+        <h1 class="hero-title">Mon compte</h1>
+        <p class="hero-subtitle">
+            Connecté en tant que <strong>@Model.NomCompte</strong>
+        </p>
+    </div>
+
+    <section class="section-shell" style="max-width:520px;margin:0 auto;">
+        <div class="filters-card" style="margin-bottom:18px;">
+            <p><strong>Identifiant :</strong> @Model.Identifiant</p>
+            <p><strong>Compte :</strong> @Model.NomCompte</p>
+        </div>
+
+        <a class="button" asp-controller="Auth" asp-action="Logout" style="width:100%;text-align:center;">
+            Se déconnecter
+        </a>
+    </section>
+</div>
