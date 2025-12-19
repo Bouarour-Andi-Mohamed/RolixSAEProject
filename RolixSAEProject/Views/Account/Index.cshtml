@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Mon compte";
+    var accountName = ViewBag.AccountName as string ?? "Mon compte";
+}
+
+<section class="auth-shell">
+    <div class="auth-card">
+        <h1 class="auth-title">@accountName</h1>
+        <p class="auth-subtitle">Vous êtes connecté.</p>
+
+        <form asp-action="Logout" method="post" class="logout-form">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="secondary-button">Se déconnecter</button>
+        </form>
+    </div>
+</section>

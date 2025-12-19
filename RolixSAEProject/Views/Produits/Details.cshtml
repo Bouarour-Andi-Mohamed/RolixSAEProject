@@ -2,6 +2,13 @@
 
 @{
     ViewData["Title"] = "Détail du produit";
+    var currency = ViewBag.CurrentCurrency as string ?? "EUR";
+    var symbol = currency switch
+    {
+        "CHF" => "CHF",
+        "USD" => "$",
+        _ => "€"
+    };
 }
 
 <h1 class="mt-4 mb-3">@Model.Nom</h1>
@@ -12,8 +19,8 @@
             <dt class="col-sm-3">Collection</dt>
             <dd class="col-sm-9">@Model.Collection</dd>
 
-            <dt class="col-sm-3">Prix (EUR)</dt>
-            <dd class="col-sm-9">@Model.PrixEUR.ToString("N0") €</dd>
+            <dt class="col-sm-3">Prix (@currency)</dt>
+            <dd class="col-sm-9">@Model.GetPrice(currency).ToString("N0") @symbol</dd>
 
             <dt class="col-sm-3">Description</dt>
             <dd class="col-sm-9">@Model.DescriptionFR</dd>
