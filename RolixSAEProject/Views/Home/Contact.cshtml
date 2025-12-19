@@ -1,15 +1,47 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer V
+@model RolixSAEProject.Models.ContactForm
 
 @{
     ViewData["Title"] = V["Contact_Title"];
 }
 
-<div class="container py-5">
-    <h1 class="mb-3">@V["Contact_Title"]</h1>
-    <p>@V["Contact_Intro"]</p>
+@* Lien vers ton CSS dédié pour ne pas impacter les autres pages *@
+<link rel="stylesheet" href="~/css/contact.css" />
 
-    <ul class="mb-0">
-        <li>@V["Contact_EmailLabel"] : <a href="mailto:contact@rolix.com">contact@rolix.com</a></li>
-    </ul>
+<div class="container py-5">
+    <h1 class="mb-4">@V["Contact_Title"]</h1>
+    <p class="mb-5">@V["Contact_Intro"]</p>
+
+    @* Formulaire relié à ton nouveau ContactController *@
+    <form asp-controller="Contact" asp-action="Submit" method="post" class="contact-form shadow p-4 rounded bg-light">
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">@V["First_Name"]</label>
+                <input asp-for="FirstName" class="form-control" placeholder="Prénom" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">@V["Last_Name"]</label>
+                <input asp-for="LastName" class="form-control" placeholder="Nom" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">@V["Email_Label"]</label>
+            <input asp-for="EMailAddress1" type="email" class="form-control" placeholder="email@exemple.com" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">@V["Subject_Label"] (Rubrique)</label>
+            <input asp-for="Description" class="form-control" placeholder="Sujet de votre demande" required />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">@V["Message_Label"] (Description)</label>
+            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Votre message ici..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100 py-2">@V["Send_Button"]</button>
+    </form>
 </div>
