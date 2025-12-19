@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.PowerPlatform.Dataverse.Client;
+﻿using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
@@ -20,18 +19,9 @@ namespace RolixSAEProject.Services
         private readonly ConcurrentDictionary<string, IReadOnlyDictionary<int, string>> _labelsCache
             = new ConcurrentDictionary<string, IReadOnlyDictionary<int, string>>();
 
-        public DataverseService(IConfiguration configuration)
+        public DataverseService(ServiceClient client)
         {
-            var url = configuration["Dataverse:Url"];
-
-            var connStr =
-                $"AuthType=OAuth;" +
-                $"Url={url};" +
-                $"AppId=51f81489-12ee-4a9e-aaae-a2591f45987d;" +
-                $"RedirectUri=http://localhost;" +
-                $"LoginPrompt=Auto;";
-
-            _client = new ServiceClient(connStr);
+            _client = client;
         }
 
         private ServiceClient Client => _client;
@@ -307,7 +297,7 @@ namespace RolixSAEProject.Services
                         {
                             0 => "Femme",
                             1 => "Homme",
-                            2 => "Unisex",
+                            3 => "Unisex",
                             _ => string.Empty
                         };
 

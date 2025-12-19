@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -12,18 +12,9 @@ namespace RolixSAEProject.Services
     {
         private readonly ServiceClient _client;
 
-        public SiteContentService(IConfiguration configuration)
+        public SiteContentService(ServiceClient client)
         {
-            var url = configuration["Dataverse:Url"];
-
-            var connStr =
-                $"AuthType=OAuth;" +
-                $"Url={url};" +
-                $"AppId=51f81489-12ee-4a9e-aaae-a2591f45987d;" +
-                $"RedirectUri=http://localhost;" +
-                $"LoginPrompt=Auto;";
-
-            _client = new ServiceClient(connStr);
+            _client = client;
         }
 
         // =========================================================
