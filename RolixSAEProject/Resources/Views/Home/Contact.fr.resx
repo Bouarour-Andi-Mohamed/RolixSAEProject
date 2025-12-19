@@ -126,17 +126,14 @@
   <data name="Contact_Title" xml:space="preserve">
     <value>Contact</value>
   </data>
+  <data name="Email_Label" xml:space="preserve">
+    <value>Email</value>
+  </data>
   <data name="First_Name" xml:space="preserve">
     <value>Prénom</value>
   </data>
   <data name="Last_Name" xml:space="preserve">
     <value>Nom</value>
-  </data>
-  <data name="Email_Label" xml:space="preserve">
-    <value>Email</value>
-  </data>
-  <data name="Subject_Label" xml:space="preserve">
-    <value>Rubrique</value>
   </data>
   <data name="Message_Label" xml:space="preserve">
     <value>Message </value>
@@ -144,10 +141,16 @@
   <data name="Send_Button" xml:space="preserve">
     <value>Envoyer le message</value>
   </data>
+  <data name="Subject_Label" xml:space="preserve">
+    <value>Rubrique</value>
+  </data>
   <data name="Subject_Placeholder" xml:space="preserve">
     <value>Sujet de votre demande</value>
   </data>
   <data name="Message_Placeholder" xml:space="preserve">
     <value>Votre message ici...</value>
+  </data>
+  <data name="Success_Message" xml:space="preserve">
+    <value>Votre message a bien été envoyé à l'équipe Rolix !</value>
   </data>
 </root>
