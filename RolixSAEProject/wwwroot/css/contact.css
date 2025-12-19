@@ -1,0 +1,20 @@
+﻿/* Style spécifique à la page de contact Rolix */
+.contact-form {
+    max-width: 700px;
+    margin: 0 auto;
+    border: 1px solid #dee2e6;
+}
+
+    .contact-form .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .contact-form .btn-dark {
+        background-color: #1a1a1a;
+        transition: background-color 0.3s;
+    }   
+
+        .contact-form .btn-dark:hover {
+            background-color: #333;
+        }

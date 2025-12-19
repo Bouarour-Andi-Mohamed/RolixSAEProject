@@ -6,40 +6,47 @@
     ViewData["Title"] = V["Contact_Title"];
 }
 
-@* Lien vers ton CSS dédié pour ne pas impacter les autres pages *@
 <link rel="stylesheet" href="~/css/contact.css" />
 
 <div class="container py-5">
+
+    @* LE CODE DU MESSAGE DE SUCCÈS SE MET ICI *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success shadow-sm" style="background-color: #d4edda; color: #155724; padding: 15px; border: 1px solid #c3e6cb; border-radius: 8px; margin-bottom: 25px; text-align: center;">
+            @V["Success_Message"]
+        </div>
+    }
+
     <h1 class="mb-4">@V["Contact_Title"]</h1>
     <p class="mb-5">@V["Contact_Intro"]</p>
 
-    @* Formulaire relié à ton nouveau ContactController *@
     <form asp-controller="Contact" asp-action="Submit" method="post" class="contact-form shadow p-4 rounded bg-light">
-
+        @* ... le reste de ton formulaire ... *@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">@V["First_Name"]</label>
-                <input asp-for="FirstName" class="form-control" placeholder="Prénom" required />
+                <input asp-for="FirstName" class="form-control" placeholder="@V["First_Name"]" required />
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">@V["Last_Name"]</label>
-                <input asp-for="LastName" class="form-control" placeholder="Nom" required />
+                <input asp-for="LastName" class="form-control" placeholder="@V["Last_Name"]" required />
             </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">@V["Email_Label"]</label>
-            <input asp-for="EMailAddress1" type="email" class="form-control" placeholder="email@exemple.com" required />
+            <input asp-for="EMailAddress1" type="email" class="form-control" placeholder="@V["Email_Label"]" required />
         </div>
 
         <div class="mb-3">
-            <label class="form-label">@V["Subject_Label"] (Rubrique)</label>
-            <input asp-for="Description" class="form-control" placeholder="Sujet de votre demande" required />
+            <label class="form-label">@V["Subject_Label"]</label>
+            <input asp-for="Message" class="form-control" placeholder="@V["Subject_Placeholder"]" required />
         </div>
 
         <div class="mb-4">
-            <label class="form-label">@V["Message_Label"] (Description)</label>
-            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Votre message ici..."></textarea>
+            <label class="form-label">@V["Message_Label"]</label>
+            <textarea asp-for="Description" class="form-control" rows="5" placeholder="@V["Message_Placeholder"]"></textarea>
         </div>
 
         <button type="submit" class="btn btn-dark w-100 py-2">@V["Send_Button"]</button>

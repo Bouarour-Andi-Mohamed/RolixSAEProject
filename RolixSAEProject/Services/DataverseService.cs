@@ -396,6 +396,30 @@ namespace RolixSAEProject.Services
 
             return produits;
         }
+        // Méthode à ajouter pour permettre la création de prospects (Leads)
+        public async Task CreateEntity(string entityName, Dictionary<string, object> data)
+        {
+            if (Client?.IsReady != true) return;
+
+            // Création d'une entité Dataverse
+            Entity entity = new Entity(entityName);
+
+            foreach (var field in data)
+            {
+                // Pour la source du prospect (OptionSet), Dataverse attend un OptionSetValue
+                if (field.Key == "leadsourcecode" && field.Value is int intValue)
+                {
+                    entity[field.Key] = new OptionSetValue(intValue);
+                }
+                else
+                {
+                    entity[field.Key] = field.Value;
+                }
+            }
+
+            // Envoi effectif vers Dataverse
+            await Task.Run(() => Client.Create(entity));
+        }
 
         /// <summary>
         /// Récupère un produit par Id (index dans la liste Rolix).
