@@ -1,47 +1,64 @@
 @model IEnumerable<RolixSAEProject.Models.Produit>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
+
 @{
-    ViewData["Title"] = "Accueil";
-    var currency = ViewBag.CurrentCurrency as string ?? "EUR";
-    var symbol = currency switch
-    {
-        "CHF" => "CHF",
-        "USD" => "$",
-        _ => "€"
-    };
+    ViewData["Title"] = V["Home_PageTitle"];
+    var currency = (ViewData["Currency"] as string) ?? "EUR";
+    var symbol = (ViewData["CurrencySymbol"] as string) ?? "€";
 }
 
 <div class="page-hero">
     <div class="section-divider"></div>
     <h1 class="hero-title">ROLIX</h1>
     <p class="hero-subtitle">
-        L’excellence horlogère suisse depuis plus d’un siècle. Des montres pensées pour durer,
-        conçues pour traverser le temps.
+        @V["Home_HeroSubtitle"]
     </p>
 </div>
 
-<section class="section-shell">
-    <h2 class="section-title">Sélection de montres</h2>
+<section class="section-shell home-products">
+    <h2 class="section-title">@V["Home_WatchSelectionTitle"]</h2>
 
     @if (Model != null && Model.Any())
     {
-        <div class="featured-grid">
-            @foreach (var produit in Model)
+        <div class="products-grid">
+            @foreach (var p in Model)
             {
-                var imageUrl = string.IsNullOrWhiteSpace(produit.ImageUrl)
-                    ? Url.Content("~/images/placeholder-watch.svg")
-                    : produit.ImageUrl;
+                var imageUrl = string.IsNullOrWhiteSpace(p.ImageUrl)
+                ? Url.Content("~/images/placeholder-watch.svg")
+                : p.ImageUrl;
 
                 <article class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="@imageUrl" alt="@produit.Nom" class="product-image" />
-                    </div>
-                    <div class="product-infos">
-                        <div class="product-title">@produit.Nom</div>
-                        <div class="product-meta">@produit.Collection</div>
-                        <div class="product-price">@produit.GetPrice(currency).ToString("N2") @symbol</div>
-                        <a class="button button-outline" asp-controller="Produits" asp-action="Details" asp-route-id="@produit.Id">
-                            Voir le détail
+                    <div class="product-media">
+                        <a asp-controller="Produits" asp-action="Details" asp-route-id="@p.Id">
+                            <img src="@imageUrl" alt="@p.Nom" />
                         </a>
+                    </div>
+
+                    <div class="product-body">
+                        <h3 class="product-name">@p.Nom</h3>
+
+                        @if (!string.IsNullOrWhiteSpace(p.Reference))
+                        {
+                            <div class="product-ref">REF-@p.Reference</div>
+                        }
+
+                        <div class="product-price">
+                            @p.GetPrice(currency).ToString("N0") @symbol
+                        </div>
+
+                        <div class="product-actions">
+                            <a class="button button-outline"
+                               asp-controller="Produits"
+                               asp-action="Details"
+                               asp-route-id="@p.Id">
+                                @V["Home_ViewDetails"]
+                            </a>
+                        </div>
                     </div>
                 </article>
             }
@@ -50,22 +67,23 @@
     else
     {
         <div class="empty-state">
-            <p>Aucune montre n’est disponible pour le moment.</p>
+            <p>@V["Home_NoWatches"]</p>
         </div>
     }
 
     <div class="cta-row">
-        <a class="button" asp-controller="Produits" asp-action="Index">Découvrir nos montres</a>
+        <a class="button" asp-controller="Produits" asp-action="Index">
+            @V["Home_DiscoverWatches"]
+        </a>
     </div>
 </section>
 
 <section class="craft-section">
     <div class="craft-shell">
         <div class="section-divider"></div>
-        <h2 class="section-title">Notre savoir-faire</h2>
+        <h2 class="section-title">@V["Home_CraftTitle"]</h2>
         <p class="craft-description">
-            Chaque montre Rolix est assemblée avec précision par des maîtres horlogers. De la conception du mouvement à l’assemblage final,
-            chaque détail est contrôlé pour garantir une qualité irréprochable.
+            @V["Home_CraftDescription"]
         </p>
     </div>
 </section>

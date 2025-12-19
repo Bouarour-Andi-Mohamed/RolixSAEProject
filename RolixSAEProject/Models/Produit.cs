@@ -26,6 +26,17 @@ namespace RolixSAEProject.Models
         // Genre : Femme / Homme / Unisex
         public string Genre { get; set; } = string.Empty;
 
+        // --- NOUVEAUX CHAMPS (Dataverse) ---
+        // Choice côté Dataverse, on stocke le "label" en string côté app
+        public string Mouvement { get; set; } = string.Empty;   // Automatique / Manuel / Quartz / Autre
+        public string Calibre { get; set; } = string.Empty;     // 3235
+        public string Materiau { get; set; } = string.Empty;    // Acier / Or jaune / ...
+        public string Bracelet { get; set; } = string.Empty;    // Oyster / Jubilee / ...
+        public int TailleBoitierMm { get; set; }                // 41
+        public string EtancheiteM { get; set; } = string.Empty;  // "200" (ou "200m" si tu préfères)
+        public string Verre { get; set; } = string.Empty;       // Saphir / Minéral / ...
+        public bool LoupeCyclope { get; set; }                  // true/false
+
         public decimal GetPrice(string currency)
         {
             return currency switch

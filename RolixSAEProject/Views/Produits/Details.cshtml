@@ -1,7 +1,15 @@
 ﻿@model RolixSAEProject.Models.Produit
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
 
 @{
-    ViewData["Title"] = "Détail du produit";
+    ViewData["Title"] = V["ProductDetails_PageTitle"].Value;
+
+
     var currency = ViewBag.CurrentCurrency as string ?? "EUR";
     var symbol = currency switch
     {
@@ -9,47 +17,121 @@
         "USD" => "$",
         _ => "€"
     };
+
+    var imageUrl = !string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? Model.ImageUrl
+        : Url.Content("~/images/placeholder-watch.svg");
+
+    // Helpers d'affichage (évite les champs vides)
+    var mouvement = string.IsNullOrWhiteSpace(Model.Mouvement) ? "—" : Model.Mouvement;
+    var calibre = string.IsNullOrWhiteSpace(Model.Calibre) ? "—" : Model.Calibre;
+    var materiau = string.IsNullOrWhiteSpace(Model.Materiau) ? "—" : Model.Materiau;
+    var bracelet = string.IsNullOrWhiteSpace(Model.Bracelet) ? "—" : Model.Bracelet;
+    var verre = string.IsNullOrWhiteSpace(Model.Verre) ? "—" : Model.Verre;
+
+    // Selon ton type côté model (int? / int), adapte si besoin
+    var tailleBoitier = (Model.TailleBoitierMm > 0) ? $"{Model.TailleBoitierMm}mm" : "—";
+
+    // Étanchéité est "texte une ligne" dans Dataverse => souvent string ("200")
+    var etancheite = string.IsNullOrWhiteSpace(Model.EtancheiteM) ? "—" : $"{Model.EtancheiteM}m";
+
+    var loupeCyclope = Model.LoupeCyclope ? V["Common_Yes"].Value : V["Common_No"].Value;
+
+    // Pour "Saphir (loupe Cyclope)" dans la section détaillée
+    var verreDetail = verre;
+    var cyclopsLabel = V["ProductDetails_CyclopsLabel"].Value;
+
+    if (Model.LoupeCyclope && verreDetail != "—" && !string.IsNullOrWhiteSpace(cyclopsLabel))
+    {
+        verreDetail = $"{verreDetail} ({cyclopsLabel})";
+    }
+
 }
 
-<h1 class="mt-4 mb-3">@Model.Nom</h1>
+<div class="details-shell">
 
-<div class="row">
-    <div class="col-md-8">
-        <dl class="row">
-            <dt class="col-sm-3">Collection</dt>
-            <dd class="col-sm-9">@Model.Collection</dd>
-
-            <dt class="col-sm-3">Prix (@currency)</dt>
-            <dd class="col-sm-9">@Model.GetPrice(currency).ToString("N0") @symbol</dd>
-
-            <dt class="col-sm-3">Description</dt>
-            <dd class="col-sm-9">@Model.DescriptionFR</dd>
-        </dl>
+    <div class="details-breadcrumb">
+        <a asp-controller="Produits" asp-action="Index">@V["ProductDetails_BreadcrumbProducts"]</a>
+        <span> / </span>
+        <span>@Model.Nom</span>
     </div>
 
-    <div class="col-md-4">
-        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-        {
-            <img src="@Model.ImageUrl"
-                 alt="@Model.Nom"
-                 class="img-fluid mb-3" />
-        }
+    <div class="details-grid">
 
-        <div class="card border-primary">
-            <div class="card-body">
-                <h5 class="card-title">Demander un devis</h5>
-                <p class="card-text">
-                    Au Sprint 1, ce bouton est uniquement visuel.
-                    Il prépare la future fonctionnalité de demande de devis.
-                </p>
-                <button class="btn btn-primary" type="button">
-                    Demander un devis
-                </button>
-            </div>
+        <div class="details-media">
+            <img src="@imageUrl" alt="@Model.Nom" />
         </div>
 
-        <a asp-controller="Produits" asp-action="Index" class="btn btn-link mt-3">
-            &laquo; Retour à la liste
-        </a>
+        <div class="details-card">
+            <h1 class="details-title">@Model.Nom</h1>
+
+            <p class="details-ref">
+                @V["ProductDetails_CollectionLabel"] : @Model.Collection
+            </p>
+
+            <div class="details-price">
+                @Model.GetPrice(currency).ToString("N0") @symbol
+            </div>
+
+            <div class="details-divider"></div>
+
+            <h2 class="details-section-title">@V["ProductDetails_DescriptionTitle"]</h2>
+            <p class="details-text">
+                @Model.DescriptionFR
+            </p>
+
+            <div class="details-divider"></div>
+
+            <h2 class="details-section-title">@V["ProductDetails_MainSpecsTitle"]</h2>
+
+            <div class="details-specs">
+                <div class="spec-row">
+                    <span class="spec-label">@V["ProductDetails_Label_Movement"]</span>
+                    <span class="spec-value">@mouvement</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">@V["ProductDetails_Label_CaseSize"]</span>
+                    <span class="spec-value">@tailleBoitier</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">@V["ProductDetails_Label_Material"]</span>
+                    <span class="spec-value">@materiau</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">@V["ProductDetails_Label_WaterResistance"]</span>
+                    <span class="spec-value">@etancheite</span>
+                </div>
+            </div>
+
+            <button class="details-cta" type="button">
+                @V["ProductDetails_RequestQuote"]
+            </button>
+
+            <a class="details-back" asp-controller="Produits" asp-action="Index">
+                &laquo; @V["ProductDetails_BackToList"]
+            </a>
+        </div>
+
     </div>
+
+    <div class="details-bottom">
+        <h3 class="bottom-title">@V["ProductDetails_DetailedSpecsTitle"]</h3>
+
+        <div class="bottom-grid">
+            <div class="bottom-col">
+                <div><span class="k">@V["ProductDetails_Label_Movement"]</span> @mouvement</div>
+                <div><span class="k">@V["ProductDetails_Label_Caliber"]</span> @calibre</div>
+                <div><span class="k">@V["ProductDetails_Label_Material"]</span> @materiau</div>
+                <div><span class="k">@V["ProductDetails_Label_Bracelet"]</span> @bracelet</div>
+            </div>
+
+            <div class="bottom-col">
+                <div><span class="k">@V["ProductDetails_Label_Size"]</span> @tailleBoitier</div>
+                <div><span class="k">@V["ProductDetails_Label_WaterResistance"]</span> @etancheite</div>
+                <div><span class="k">@V["ProductDetails_Label_Glass"]</span> @verreDetail</div>
+                <div><span class="k">@V["ProductDetails_Label_Cyclops"]</span> @loupeCyclope</div>
+            </div>
+        </div>
+    </div>
+
 </div>

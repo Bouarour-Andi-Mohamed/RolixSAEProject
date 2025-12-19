@@ -10,29 +10,51 @@ namespace RolixSAEProject.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataverseService _dataverseService;
+        private readonly SiteContentService _siteContentService;
 
-        public HomeController(ILogger<HomeController> logger, DataverseService dataverseService)
+        public HomeController(ILogger<HomeController> logger, DataverseService dataverseService, SiteContentService siteContentService)
         {
             _logger = logger;
             _dataverseService = dataverseService;
+            _siteContentService = siteContentService;
+
         }
 
         public IActionResult Index()
         {
-            var currency = ResolveCurrency();
             var produits = _dataverseService
                 .GetProduitsRolix()
                 .Take(3)
                 .ToList();
 
-            ViewBag.CurrentCurrency = currency;
             return View(produits);
         }
 
+        public IActionResult AboutUs()
+        {
+            var model = _siteContentService.GetAboutUsPage("about-us") ?? new AboutUsPage();
+            return View(model);
+        }
+
+        //Page confid entialite du home 
         public IActionResult Privacy()
         {
             return View();
         }
+
+        //Page mentions legales de home
+        public IActionResult Terms()
+        {
+            return View();
+        }
+
+        //Page contact du home
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

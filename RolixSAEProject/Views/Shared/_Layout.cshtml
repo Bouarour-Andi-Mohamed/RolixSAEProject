@@ -1,6 +1,8 @@
-@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<RolixSAEProject.SharedResource> L
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,52 +10,97 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RolixSAEProject.styles.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
+
 </head>
 <body>
     @{
         var currentCurrency = Context.Request.Cookies["Currency"] ?? "EUR";
         var returnUrl = Context.Request.Path + Context.Request.QueryString;
-        var accountId = Context.Session.GetString("AccountId");
-        var accountName = Context.Session.GetString("AccountName") ?? "Mon compte";
+        var currency = (ViewData["Currency"] as string) ?? "EUR";
+
+        var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName; // "fr" ou "en"
     }
+
     <header class="app-header">
         <div class="header-shell">
             <a class="brand" asp-controller="Home" asp-action="Index">ROLIX</a>
 
             <nav class="header-nav">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : string.Empty)" asp-controller="Home" asp-action="Index">Accueil</a>
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Produits" ? "active" : string.Empty)" asp-controller="Produits" asp-action="Index">Nos produits</a>
-                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Notre entreprise</a>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : string.Empty)"
+                   asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Produits" ? "active" : string.Empty)"
+                   asp-controller="Produits" asp-action="Index">@L["Nav_Products"]</a>
+
+                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "AboutUs" ? "active" : string.Empty)"
+                   asp-controller="Home" asp-action="AboutUs">@L["Nav_About"]</a>
             </nav>
 
             <div class="header-actions">
                 <div class="language-switch">
-                    <span class="language active">FR</span>
+                    <a class="language @(currentLang == "fr" ? "active" : "")"
+                       asp-controller="Preferences"
+                       asp-action="SetLanguage"
+                       asp-route-culture="fr"
+                       asp-route-returnUrl="@returnUrl">FR</a>
+
                     <span class="divider">/</span>
-                    <span class="language">EN</span>
+
+                    <a class="language @(currentLang == "en" ? "active" : "")"
+                       asp-controller="Preferences"
+                       asp-action="SetLanguage"
+                       asp-route-culture="en"
+                       asp-route-returnUrl="@returnUrl">EN</a>
                 </div>
 
-                <div class="currency-switch">
-                    <button type="button" class="currency-button" aria-haspopup="true" aria-expanded="false">
-                        @currentCurrency
-                        <span class="chevron">▾</span>
+                <div class="currency-switch" data-dropdown="currency">
+                    <button type="button"
+                            class="currency-button"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-controls="currency-menu">
+                        <span class="currency-code">@currentCurrency</span>
+                        <span class="chevron" aria-hidden="true">▾</span>
                     </button>
-                    <form class="currency-menu" method="get" asp-controller="Preferences" asp-action="SetCurrency">
-                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                        <button type="submit" name="currency" value="EUR" class="currency-option" aria-current="@(currentCurrency == "EUR" ? "true" : "false")">EUR</button>
-                        <button type="submit" name="currency" value="CHF" class="currency-option" aria-current="@(currentCurrency == "CHF" ? "true" : "false")">CHF</button>
-                        <button type="submit" name="currency" value="USD" class="currency-option" aria-current="@(currentCurrency == "USD" ? "true" : "false")">USD</button>
-                    </form>
+
+                    <div id="currency-menu" class="currency-menu" role="menu" aria-label="@L["Currency_AriaLabel"]">
+                        <a role="menuitem"
+                           class="currency-item @(currentCurrency == "EUR" ? "is-active" : "")"
+                           asp-controller="Preferences"
+                           asp-action="SetCurrency"
+                           asp-route-currency="EUR"
+                           asp-route-returnUrl="@returnUrl"
+                           aria-disabled="@(currentCurrency == "EUR" ? "true" : "false")"
+                           tabindex="@(currentCurrency == "EUR" ? "-1" : "0")">
+                            EUR <span class="currency-hint">€</span>
+                        </a>
+
+                        <a role="menuitem"
+                           class="currency-item @(currentCurrency == "CHF" ? "is-active" : "")"
+                           asp-controller="Preferences"
+                           asp-action="SetCurrency"
+                           asp-route-currency="CHF"
+                           asp-route-returnUrl="@returnUrl"
+                           aria-disabled="@(currentCurrency == "CHF" ? "true" : "false")"
+                           tabindex="@(currentCurrency == "CHF" ? "-1" : "0")">
+                            CHF <span class="currency-hint">CHF</span>
+                        </a>
+
+                        <a role="menuitem"
+                           class="currency-item @(currentCurrency == "USD" ? "is-active" : "")"
+                           asp-controller="Preferences"
+                           asp-action="SetCurrency"
+                           asp-route-currency="USD"
+                           asp-route-returnUrl="@returnUrl"
+                           aria-disabled="@(currentCurrency == "USD" ? "true" : "false")"
+                           tabindex="@(currentCurrency == "USD" ? "-1" : "0")">
+                            USD <span class="currency-hint">$</span>
+                        </a>
+                    </div>
                 </div>
 
-                @if (string.IsNullOrEmpty(accountId))
-                {
-                    <a class="account-link" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">Se connecter</a>
-                }
-                else
-                {
-                    <a class="account-link" asp-controller="Account" asp-action="Index">@accountName</a>
-                }
+                <a class="account-link" href="#">@L["MyAccount"]</a>
             </div>
         </div>
     </header>
@@ -66,11 +113,12 @@
         <div class="footer-shell">
             <div class="brand">ROLIX</div>
             <div class="footer-links">
-                <a href="#">Politique de confidentialité</a>
-                <a href="#">Conditions générales</a>
-                <a href="#">Contact</a>
+                <a asp-controller="Home" asp-action="Privacy">@L["Footer_Privacy"]</a>
+                <a asp-controller="Home" asp-action="Terms">@L["Footer_Terms"]</a>
+                <a asp-controller="Home" asp-action="Contact">@L["Footer_Contact"]</a>
             </div>
-            <p class="footer-copy">© 2025 Rolix. Tous droits réservés.</p>
+
+            <p class="footer-copy">@L["Footer_Copy"]</p>
         </div>
     </footer>
 

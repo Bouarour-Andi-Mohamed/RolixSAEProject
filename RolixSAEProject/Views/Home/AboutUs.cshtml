@@ -1,0 +1,111 @@
+﻿@model RolixSAEProject.Models.AboutUsPage
+
+@{
+    ViewData["Title"] = "Notre entreprise";
+
+    var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName; // "fr" ou "en"
+
+    // Helper traduction avec fallback:
+    // - si EN demandé mais vide => FR
+    // - si FR demandé mais vide => EN
+    string T(string? fr, string? en)
+    {
+        if (lang == "en")
+            return !string.IsNullOrWhiteSpace(en) ? en! : (fr ?? string.Empty);
+
+        return !string.IsNullOrWhiteSpace(fr) ? fr! : (en ?? string.Empty);
+    }
+
+    // Images (fallback sur les images locales si non renseignées dans Dataverse)
+    var heroImage = !string.IsNullOrWhiteSpace(Model?.ImageBanniereUrl)
+        ? Url.Content(Model.ImageBanniereUrl!)
+        : Url.Content("~/images/entreprise-hero.jpg");
+
+    var craftImage = !string.IsNullOrWhiteSpace(Model?.ImageHorlogerieUrl)
+        ? Url.Content(Model.ImageHorlogerieUrl!)
+        : Url.Content("~/images/entreprise-craft.jpg");
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/about.css" asp-append-version="true" />
+}
+
+<div class="about-hero">
+    <img src="@heroImage" alt="Rolix" class="about-hero-img" />
+    <div class="about-hero-overlay">
+        <h1 class="about-hero-title">@T(Model.TitreHeroFR, Model.TitreHeroEN)</h1>
+    </div>
+</div>
+
+<div class="about-shell">
+    <h2 class="about-page-title">@T(Model.TitrePageFR, Model.TitrePageEN)</h2>
+
+    <section class="about-section about-history">
+        <h3 class="about-section-title">@T(Model.TitreHistoireFR, Model.TitreHistoireEN)</h3>
+
+        @if (!string.IsNullOrWhiteSpace(T(Model.HistoireP1FR, Model.HistoireP1EN)))
+        {
+            <p class="about-text">@T(Model.HistoireP1FR, Model.HistoireP1EN)</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(T(Model.HistoireP2FR, Model.HistoireP2EN)))
+        {
+            <p class="about-text">@T(Model.HistoireP2FR, Model.HistoireP2EN)</p>
+        }
+    </section>
+
+    <section class="about-section about-values">
+        <h3 class="about-section-title about-values-title">@T(Model.TitreValeursFR, Model.TitreValeursEN)</h3>
+
+        <div class="about-values-grid">
+            <div class="about-value-card">
+                <div class="about-value-num">01</div>
+                <h4 class="about-value-title">@T(Model.Valeur1TitreFR, Model.Valeur1TitreEN)</h4>
+                <p class="about-value-text">@T(Model.Valeur1TexteFR, Model.Valeur1TexteEN)</p>
+            </div>
+
+            <div class="about-value-card">
+                <div class="about-value-num">02</div>
+                <h4 class="about-value-title">@T(Model.Valeur2TitreFR, Model.Valeur2TitreEN)</h4>
+                <p class="about-value-text">@T(Model.Valeur2TexteFR, Model.Valeur2TexteEN)</p>
+            </div>
+
+            <div class="about-value-card">
+                <div class="about-value-num">03</div>
+                <h4 class="about-value-title">@T(Model.Valeur3TitreFR, Model.Valeur3TitreEN)</h4>
+                <p class="about-value-text">@T(Model.Valeur3TexteFR, Model.Valeur3TexteEN)</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"></div>
+
+    <section class="about-section">
+        <div class="about-craft-grid">
+            <div>
+                <h3 class="about-section-title">@T(Model.TitreArtFR, Model.TitreArtEN)</h3>
+
+                @if (!string.IsNullOrWhiteSpace(T(Model.ArtP1FR, Model.ArtP1EN)))
+                {
+                    <p class="about-text">@T(Model.ArtP1FR, Model.ArtP1EN)</p>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(T(Model.ArtP2FR, Model.ArtP2EN)))
+                {
+                    <p class="about-text">@T(Model.ArtP2FR, Model.ArtP2EN)</p>
+                }
+            </div>
+
+            <div class="about-craft-media">
+                <img src="@craftImage" alt="Horlogerie" class="about-craft-img" />
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"></div>
+
+    <section class="about-section about-commit">
+        <h3 class="about-section-title">@T(Model.TitreEngagementFR, Model.TitreEngagementEN)</h3>
+        <p class="about-text">@T(Model.EngagementTexteFR, Model.EngagementTexteEN)</p>
+    </section>
+</div>

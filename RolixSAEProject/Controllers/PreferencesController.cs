@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -7,32 +8,49 @@ namespace RolixSAEProject.Controllers
     public class PreferencesController : Controller
     {
         [HttpGet]
-        public IActionResult SetCurrency(string currency, string? returnUrl)
+        public IActionResult SetCurrency(string currency, string? returnUrl = null)
         {
-            var normalized = NormalizeCurrency(currency);
+            currency = (currency ?? "EUR").ToUpperInvariant();
+            if (currency != "EUR" && currency != "CHF" && currency != "USD")
+                currency = "EUR";
 
-            Response.Cookies.Append("Currency", normalized, new CookieOptions
+            Response.Cookies.Append("Currency", currency, new CookieOptions
             {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                Path = "/",
                 IsEssential = true,
-                Expires = DateTimeOffset.UtcNow.AddYears(1)
+                SameSite = SameSiteMode.Lax
             });
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
                 return Redirect(returnUrl);
-            }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Produits");
         }
 
-        private static string NormalizeCurrency(string currency)
+        [HttpGet]
+        public IActionResult SetLanguage(string culture, string? returnUrl = null)
         {
-            return currency switch
-            {
-                "CHF" => "CHF",
-                "USD" => "USD",
-                _ => "EUR"
-            };
+            // sécurité minimale
+            culture = (culture == "en") ? "en" : "fr";
+
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    Path = "/",
+                    IsEssential = true,
+                    SameSite = SameSiteMode.Lax
+                }
+            );
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            // fallback si returnUrl absent
+            return RedirectToAction("Index", "Home");
         }
     }
 }
