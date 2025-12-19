@@ -26,7 +26,7 @@ html, body {
 h1, h2, h3 {
     font-family: var(--font-brand);
     font-weight: 600;
-    letter-spacing: 0.12em; /* tu peux laisser tes valeurs existantes si tu préfères */
+    letter-spacing: 0.12em; /* tu peux laisser tes valeurs existantes si tu prÃ©fÃ¨res */
 }
 
 
@@ -280,7 +280,7 @@ button {
     .header-shell {
         max-width: 1280px; /* un peu plus large */
         margin: 0 auto;
-        padding: 18px 32px; /* plus d’air gauche/droite, moins haut */
+        padding: 18px 32px; /* plus dâ€™air gauche/droite, moins haut */
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
@@ -304,7 +304,7 @@ button {
         }
 
     .header-actions {
-        gap: 16px; /* moins serré mais plus propre */
+        gap: 16px; /* moins serrÃ© mais plus propre */
         font-size: 12px; /* plus petit */
     }
 
@@ -428,14 +428,14 @@ button {
 }
 
 /* =========================================================
-   HOME: utiliser les mêmes cartes que products.css
-   (même HTML, juste rendu centré propre comme la maquette)
+   HOME: utiliser les mÃªmes cartes que products.css
+   (mÃªme HTML, juste rendu centrÃ© propre comme la maquette)
    ========================================================= */
 .home-products .products-grid {
     margin-top: 26px;
 }
 
-/* On garde la photo, mais on enlève l’effet "carte encadrée" sur l’accueil */
+/* On garde la photo, mais on enlÃ¨ve lâ€™effet "carte encadrÃ©e" sur lâ€™accueil */
 .home-products .product-card {
     border: 0;
     background: transparent;
@@ -447,7 +447,7 @@ button {
     background: #f3f4f6;
 }
 
-/* Texte centré comme ta maquette */
+/* Texte centrÃ© comme ta maquette */
 .home-products .product-body {
     padding: 14px 0 0;
     align-items: center;

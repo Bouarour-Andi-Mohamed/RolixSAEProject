@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Se connecter";
+    var error = ViewBag.Error as string;
+    var returnUrl = ViewBag.ReturnUrl as string;
+}
+
+<div class="page-wrapper">
+    <div class="page-hero">
+        <div class="section-divider"></div>
+        <h1 class="hero-title">Se connecter</h1>
+        <p class="hero-subtitle">Accédez à votre espace client.</p>
+    </div>
+
+    <section class="section-shell" style="max-width:520px;margin:0 auto;">
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <p style="color:#b91c1c; margin-bottom:14px;">@error</p>
+        }
+
+        <form method="post" asp-controller="Auth" asp-action="Login">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+            <div class="field" style="margin-bottom:14px;">
+                <label>Identifiant</label>
+                <input name="identifiant" autocomplete="username" />
+            </div>
+
+            <div class="field" style="margin-bottom:18px;">
+                <label>Mot de passe</label>
+                <input name="motDePasse" type="password" autocomplete="current-password" />
+            </div>
+
+            <button class="button" type="submit" style="width:100%;">Se connecter</button>
+        </form>
+    </section>
+</div>
