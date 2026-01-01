@@ -1,41 +1,179 @@
-﻿@{
-    ViewData["Title"] = "Demande de devis";
-    var currency = (ViewBag.CurrentCurrency as string) ?? "EUR";
-    var err = TempData["Error"] as string;
-    var productDataverseId = ViewBag.ProductDataverseId as string ?? "";
-}
+﻿@model RolixSAEProject.Models.QuoteRequestViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer V
 
+@{
+    ViewData["Title"] = "Demande de devis";
+    var err = TempData["Error"] as string;
+
+    var currency = (Model.Currency ?? "EUR").ToUpperInvariant();
+    var symbol = currency switch
+    {
+        "CHF" => "CHF",
+        "USD" => "$",
+        _ => "€"
+    };
+
+    var p = Model.Product;
+    var productName = p?.Nom ?? "Produit";
+    var productPrice = p != null ? p.GetPrice(currency).ToString("N0") : "—";
+    var imageUrl = (!string.IsNullOrWhiteSpace(p?.ImageUrl)) ? p!.ImageUrl : Url.Content("~/images/placeholder-watch.svg");
+
+    string Safe(string? s) => string.IsNullOrWhiteSpace(s) ? "—" : s!;
+}
 
 <div class="page-wrapper">
     <div class="page-hero">
         <div class="section-divider"></div>
         <h1 class="hero-title">Demande de devis</h1>
-        <p class="hero-subtitle">Finalisez votre demande.</p>
+        <p class="hero-subtitle">Complétez les informations, on envoie la demande dans Power Apps.</p>
     </div>
 
-    <section class="section-shell" style="max-width:520px;margin:0 auto;">
+    <section class="section-shell" style="max-width:920px;margin:0 auto;">
         @if (!string.IsNullOrWhiteSpace(err))
         {
             <p style="color:#b91c1c;margin-bottom:14px;">@err</p>
         }
 
-        <form method="post" asp-controller="Devis" asp-action="Demande">
-            @Html.AntiForgeryToken()
+        <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start;">
 
-            <input type="hidden" name="productDataverseId" value="@productDataverseId" />
-            <input type="hidden" name="currency" value="@currency" />
+            <!-- Récap produit -->
+            <div style="border:1px solid #e5e7eb;background:#fff;padding:16px;">
+                <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.06em;">Produit sélectionné</h2>
 
-            <div class="field" style="margin-bottom:14px;">
-                <label>Quantité</label>
-                <input name="quantity" type="number" min="1" step="1" value="1" />
+                <div style="display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;">
+                    <img src="@imageUrl" alt="@productName" style="width:120px;height:120px;object-fit:cover;border:1px solid #e5e7eb;" />
+                    <div>
+                        <div style="font-weight:600;font-size:16px;margin-bottom:6px;">@productName</div>
+                        <div style="font-size:14px;color:#6b7280;margin-bottom:8px;">
+                            Devise site: <strong style="color:#111;">@currency</strong>
+                        </div>
+                        <div style="font-size:18px;font-weight:700;">
+                            @productPrice @symbol
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:14px;border-top:1px solid #eee;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px;">
+                    <div><strong>Collection:</strong> @Safe(p?.Collection)</div>
+                    <div><strong>Catégorie:</strong> @Safe(p?.Categorie)</div>
+                    <div><strong>Genre:</strong> @Safe(p?.Genre)</div>
+                    <div><strong>Mouvement:</strong> @Safe(p?.Mouvement)</div>
+                    <div><strong>Matériau:</strong> @Safe(p?.Materiau)</div>
+                    <div><strong>Bracelet:</strong> @Safe(p?.Bracelet)</div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(p?.DescriptionFR))
+                {
+                    <div style="margin-top:12px;color:#374151;font-size:14px;line-height:1.5;">
+                        <strong>Description:</strong>
+                        <div style="margin-top:6px;">@p!.DescriptionFR</div>
+                    </div>
+                }
             </div>
 
-            <div class="field" style="margin-bottom:18px;">
-                <label>Remise (montant)</label>
-                <input name="manualDiscountAmount" type="number" min="0" step="0.01" value="0" />
+            <!-- Formulaire -->
+            <div style="border:1px solid #e5e7eb;background:#fff;padding:16px;">
+                <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.06em;">Votre demande</h2>
+
+                <form method="post"
+                      action="@Url.Action("Demande","Devis")"
+                      novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" style="color:#b91c1c;margin-bottom:12px;"></div>
+
+                    <!-- Identifiants produit + devise -->
+                    <input type="hidden" asp-for="ProductLocalId" />
+                    <input type="hidden" asp-for="ProductDataverseId" />
+                    <input type="hidden" asp-for="Currency" />
+
+                    <!-- Pas de remise: on envoie 0 sans UI -->
+                    <input type="hidden" name="manualDiscountAmount" value="0" />
+
+                    <div style="display:grid;gap:12px;">
+
+                        <div>
+                            <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                Quantité
+                            </label>
+                            <input asp-for="Quantity" type="number" min="1" step="1"
+                                   style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;" />
+                            <span asp-validation-for="Quantity" style="color:#b91c1c;font-size:13px;"></span>
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                Raison de la demande *
+                            </label>
+                            <textarea asp-for="Reason" rows="4"
+                                      placeholder="Ex: demande de disponibilité, délai, gravure, variante, question sur le modèle..."
+                                      style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;resize:vertical;"></textarea>
+                            <span asp-validation-for="Reason" style="color:#b91c1c;font-size:13px;"></span>
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                Usage prévu (optionnel)
+                            </label>
+                            <input asp-for="Usage" placeholder="Ex: cadeau, usage pro, événement..."
+                                   style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;" />
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div>
+                                <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                    Préférence de contact
+                                </label>
+                                <select asp-for="ContactPreference"
+                                        style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;background:#fff;">
+                                    <option value="Email">Email</option>
+                                    <option value="Téléphone">Téléphone</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                    Email (optionnel)
+                                </label>
+                                <input asp-for="ContactEmail" autocomplete="email"
+                                       style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;" />
+                                <span asp-validation-for="ContactEmail" style="color:#b91c1c;font-size:13px;"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                Téléphone (optionnel)
+                            </label>
+                            <input asp-for="ContactPhone" autocomplete="tel"
+                                   style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;" />
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                                Notes complémentaires (optionnel)
+                            </label>
+                            <textarea asp-for="Notes" rows="3"
+                                      placeholder="Ex: contraintes, infos utiles, disponibilité pour rappel..."
+                                      style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;outline:none;resize:vertical;"></textarea>
+                        </div>
+
+                        <button class="button" type="submit"
+                                style="margin-top:6px;width:100%;border:1px solid #111;background:#111;color:#fff;padding:12px 14px;cursor:pointer;">
+                            Envoyer la demande de devis
+                        </button>
+
+                        <a asp-controller="Produits" asp-action="Details" asp-route-id="@Model.ProductLocalId"
+                           style="display:inline-block;text-align:center;color:#111;text-decoration:none;padding:10px 0;">
+                            Retour au produit
+                        </a>
+                    </div>
+                </form>
             </div>
 
-            <button class="button" type="submit" style="width:100%;">Créer le devis</button>
-        </form>
+        </div>
     </section>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -22,6 +22,15 @@ namespace RolixSAEProject.Services
             public Guid QuoteId { get; set; }
             public string Debug { get; set; } = "";
         }
+        public void UpdateQuoteDescription(Guid quoteId, string description)
+        {
+            if (_client?.IsReady != true) return;
+
+            var q = new Entity("quote", quoteId);
+            q["description"] = description ?? "";
+            _client.Update(q);
+        }
+
 
         // ✅ Normalise ce que le site peut envoyer (EUR/€/"euro"/"franc suisse"/etc.)
         private static string NormalizeCurrency(string currency)
