@@ -3,7 +3,10 @@ namespace RolixSAEProject.Models
 {
     public class Produit
     {
+
+
         public int Id { get; set; }
+        public Guid ProductDataverseId { get; set; }
 
         public string Nom { get; set; } = string.Empty;
         public string Reference { get; set; } = string.Empty;

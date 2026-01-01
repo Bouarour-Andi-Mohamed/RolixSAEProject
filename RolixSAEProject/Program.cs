@@ -7,6 +7,8 @@ using RolixSAEProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<QuoteService>();
+
 // Localisation (RESX) — dossier Resources
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

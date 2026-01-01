@@ -103,9 +103,16 @@
                 </div>
             </div>
 
-            <button class="details-cta" type="button">
-                @V["ProductDetails_RequestQuote"]
-            </button>
+            <a class="details-cta"
+               asp-controller="Devis"
+               asp-action="Demande"
+               asp-route-id="@Model.Id"
+               asp-route-productDataverseId="@Model.ProductDataverseId">
+                Demander un devis
+            </a>
+
+
+
 
             <a class="details-back" asp-controller="Produits" asp-action="Index">
                 &laquo; @V["ProductDetails_BackToList"]

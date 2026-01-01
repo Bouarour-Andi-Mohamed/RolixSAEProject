@@ -6,6 +6,7 @@ using Microsoft.Xrm.Sdk.Query;
 using RolixSAEProject.Models;
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -364,6 +365,7 @@ namespace RolixSAEProject.Services
                     return new Produit
                     {
                         Id = index + 1,
+                        ProductDataverseId = e.Id,
                         Nom = e.GetAttributeValue<string>("name") ?? string.Empty,
                         DescriptionFR = descriptionUi,
                         DescriptionEN = descriptionEn,

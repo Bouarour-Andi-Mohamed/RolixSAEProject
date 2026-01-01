@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Devis créé";
+    var msg = ViewBag.Message as string ?? "Votre demande a bien été enregistrée.";
+    var debug = ViewBag.Debug as string ?? "";
+}
+
+<div class="page-wrapper">
+    <div class="page-hero">
+        <div class="section-divider"></div>
+        <h1 class="hero-title">Devis créé</h1>
+        <p class="hero-subtitle">@msg</p>
+    </div>
+
+    <section class="section-shell" style="max-width:820px;margin:0 auto;">
+        <div style="border:1px solid #e5e7eb;background:#fff;padding:14px 16px;margin-bottom:18px;">
+            ID devis : <strong>@ViewBag.QuoteId</strong>
+        </div>
+
+        <details style="border:1px solid #e5e7eb;background:#fff;padding:14px 16px;">
+            <summary style="cursor:pointer;font-weight:700;">Debug (à enlever plus tard)</summary>
+            <pre style="white-space:pre-wrap;margin:12px 0 0;font-size:12px;color:#111;">@debug</pre>
+        </details>
+
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+            <a class="button button-outline" asp-controller="Produits" asp-action="Index">Retour aux produits</a>
+            <a class="button" asp-controller="Account" asp-action="Index">Mon compte</a>
+        </div>
+    </section>
+</div>
