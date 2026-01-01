@@ -34,22 +34,22 @@ namespace RolixSAEProject.Controllers
                 return View("~/Views/Auth/Login.cshtml", model);
             }
 
-            var accountId = _accountService.ValidateCredentials(model.Identifiant, model.MotDePasse);
+            var profile = _accountService.ValidateLogin(model.Identifiant, model.MotDePasse);
 
-            if (string.IsNullOrWhiteSpace(accountId))
+            if (profile == null)
             {
-                ModelState.AddModelError("", "Identifiant ou mot de passe incorrect.");
+                ViewBag.Error = "Login incorrect.";
                 ViewBag.ReturnUrl = returnUrl;
                 return View("~/Views/Auth/Login.cshtml", model);
             }
 
             // session OK
-            HttpContext.Session.SetString("account_id", accountId);
+            HttpContext.Session.SetString("account_id", profile.AccountId);
 
-            // toujours /Account (ou returnUrl si local)
             if (Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
             return Redirect("/Account");
         }
+
 
         // /Auth/Logout
         [HttpGet]

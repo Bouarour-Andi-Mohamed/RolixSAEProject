@@ -1,0 +1,95 @@
+﻿/* =========================
+   LOGIN (Auth/Login)
+   ========================= */
+
+.login-shell {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.login-card {
+    border: 1px solid var(--border-color);
+    background: #fff;
+    padding: 22px;
+}
+
+.login-error {
+    border: 1px solid rgba(185, 28, 28, .25);
+    background: rgba(185, 28, 28, .06);
+    color: #7f1d1d;
+    padding: 12px 14px;
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.login-form {
+    display: grid;
+    gap: 16px;
+}
+
+.login-field label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.login-field input {
+    width: 100%;
+    border: 1px solid #d6d6d6;
+    padding: 12px 12px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    border-radius: 10px;
+    transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+    .login-field input:focus {
+        border-color: #111;
+        box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+    }
+
+.login-actions {
+    margin-top: 6px;
+    display: grid;
+    gap: 10px;
+}
+
+.login-submit {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 18px;
+}
+
+.login-hint {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Un petit “feel” luxe */
+.login-card {
+    border-radius: 14px;
+}
+
+    .login-card::before {
+        content: "";
+        display: block;
+        height: 1px;
+        width: 100%;
+        background: var(--border-color);
+        margin: 0 0 18px;
+    }
+
+@media (max-width: 620px) {
+    .login-card {
+        padding: 18px;
+    }
+}

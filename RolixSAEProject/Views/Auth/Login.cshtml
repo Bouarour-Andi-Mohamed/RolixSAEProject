@@ -4,6 +4,10 @@
     var returnUrl = ViewBag.ReturnUrl as string;
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
 <div class="page-wrapper">
     <div class="page-hero">
         <div class="section-divider"></div>
@@ -11,27 +15,32 @@
         <p class="hero-subtitle">Accédez à votre espace client.</p>
     </div>
 
-    <section class="section-shell" style="max-width:520px;margin:0 auto;">
+    <section class="section-shell login-shell">
         @if (!string.IsNullOrWhiteSpace(error))
         {
-            <p style="color:#b91c1c; margin-bottom:14px;">@error</p>
+            <div class="login-error">@error</div>
         }
 
-        <form method="post" asp-controller="Auth" asp-action="Login">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="returnUrl" value="@returnUrl" />
+        <div class="login-card">
+            <form class="login-form" method="post" asp-controller="Auth" asp-action="Login">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
 
-            <div class="field" style="margin-bottom:14px;">
-                <label>Identifiant</label>
-                <input name="identifiant" autocomplete="username" />
-            </div>
+                <div class="login-field">
+                    <label>Identifiant</label>
+                    <input name="identifiant" autocomplete="username" />
+                </div>
 
-            <div class="field" style="margin-bottom:18px;">
-                <label>Mot de passe</label>
-                <input name="motDePasse" type="password" autocomplete="current-password" />
-            </div>
+                <div class="login-field">
+                    <label>Mot de passe</label>
+                    <input name="motDePasse" type="password" autocomplete="current-password" />
+                </div>
 
-            <button class="button" type="submit" style="width:100%;">Se connecter</button>
-        </form>
+                <div class="login-actions">
+                    <button class="button login-submit" type="submit">Se connecter</button>
+                    <p class="login-hint">Vos identifiants sont vérifiés dans Dataverse.</p>
+                </div>
+            </form>
+        </div>
     </section>
 </div>
