@@ -1,0 +1,79 @@
+﻿@model RolixSAEProject.Models.SavCreateViewModel
+
+@{
+    ViewData["Title"] = "Demande SAV";
+}
+
+<div class="page-wrapper">
+    <div class="page-hero">
+        <div class="section-divider"></div>
+        <h1 class="hero-title">Demande SAV</h1>
+        <p class="hero-subtitle">Décris ton problème et sélectionne le produit concerné.</p>
+    </div>
+
+    <section class="section-shell" style="max-width:720px;margin:0 auto;">
+        <div style="border:1px solid #e5e7eb;background:#fff;padding:16px;">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="border:1px solid #fecaca;background:#fff7f7;color:#991b1b;padding:10px 12px;margin-bottom:12px;">
+                    @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@e.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <form method="post" asp-controller="Sav" asp-action="Create">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="OrderId" />
+
+                <div style="display:grid;gap:12px;">
+                    <div>
+                        <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                            Produit concerné *
+                        </label>
+
+                        <select asp-for="ProductId"
+                                style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;background:#fff;">
+                            <option value="">-- Choisir un produit --</option>
+                            @foreach (var pr in Model.Products)
+                            {
+                                <option value="@pr.ProductId">@pr.ProductName</option>
+                            }
+                        </select>
+
+                        <span asp-validation-for="ProductId" style="color:#b91c1c;font-size:13px;"></span>
+                    </div>
+
+                    <div>
+                        <label style="display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+                            Description du problème *
+                        </label>
+
+                        <textarea asp-for="ProblemDescription" rows="6"
+                                  placeholder="Ex: produit non conforme, défaut, problème d’utilisation, pièce manquante..."
+                                  style="width:100%;border:1px solid #d6d6d6;padding:10px 12px;font-size:14px;resize:vertical;"></textarea>
+
+                        <span asp-validation-for="ProblemDescription" style="color:#b91c1c;font-size:13px;"></span>
+                    </div>
+
+                    <button type="submit"
+                            style="border:1px solid #111;background:#111;color:#fff;padding:12px 14px;cursor:pointer;">
+                        Envoyer la demande SAV
+                    </button>
+
+                    <a asp-controller="Account" asp-action="Index"
+                       style="display:inline-block;text-align:center;color:#111;text-decoration:none;padding:10px 0;">
+                        Retour à mon compte
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

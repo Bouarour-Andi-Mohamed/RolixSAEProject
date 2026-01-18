@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "SAV envoyé";
+}
+
+<div class="page-wrapper">
+    <div class="page-hero">
+        <div class="section-divider"></div>
+        <h1 class="hero-title">Demande SAV envoyée</h1>
+        <p class="hero-subtitle">Votre demande a bien été enregistrée dans Power Apps.</p>
+    </div>
+
+    <section class="section-shell" style="max-width:720px;margin:0 auto;">
+        <div style="border:1px solid #e5e7eb;background:#fff;padding:16px;">
+            <div style="font-size:14px;color:#6b7280;margin-bottom:6px;">ID SAV :</div>
+            <div style="font-weight:700;">@ViewBag.SavId</div>
+
+            <div style="margin-top:14px;">
+                <a asp-controller="Account" asp-action="Index"
+                   style="border:1px solid #111;background:#fff;color:#111;padding:10px 14px;text-decoration:none;">
+                    Retour à mon compte
+                </a>
+            </div>
+        </div>
+    </section>
+</div>

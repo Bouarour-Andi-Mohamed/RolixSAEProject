@@ -72,6 +72,11 @@ builder.Services.AddSingleton<ServiceClient>(sp =>
 builder.Services.AddSingleton<DataverseService>();
 builder.Services.AddSingleton<SiteContentService>();
 builder.Services.AddSingleton<CustomerAccountService>();
+builder.Services.AddSingleton<OrderService>();
+builder.Services.AddSingleton<SavService>();
+builder.Services.AddSingleton<SavService>();
+
+
 
 var app = builder.Build();
 
