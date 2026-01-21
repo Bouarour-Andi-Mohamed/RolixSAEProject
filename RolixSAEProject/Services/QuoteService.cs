@@ -3,6 +3,7 @@ using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
+using RolixSAEProject.Models;
 using System;
 using System.Linq;
 
@@ -260,5 +261,72 @@ namespace RolixSAEProject.Services
                 Debug = debug
             };
         }
+
+        public List<QuoteSummary> GetQuotesForAccount(Guid accountId, int top = 50)
+        {
+            if (_client?.IsReady != true) return new List<QuoteSummary>();
+            if (accountId == Guid.Empty) return new List<QuoteSummary>();
+
+            var q = new QueryExpression("quote")
+            {
+                ColumnSet = new ColumnSet(
+                    "quoteid",
+                    "name",
+                    "createdon",
+                    "totalamount",
+                    "transactioncurrencyid",
+                    "pricelevelid",
+                    "statecode",
+                    "statuscode",
+                    "customerid"
+                ),
+                Criteria =
+        {
+            Conditions =
+            {
+                // customerid = account connecté
+                new ConditionExpression("customerid", ConditionOperator.Equal, accountId)
+            }
+        },
+                TopCount = top
+            };
+
+            q.AddOrder("createdon", OrderType.Descending);
+
+            var rows = _client.RetrieveMultiple(q).Entities;
+
+            var list = new List<QuoteSummary>();
+
+            foreach (var e in rows)
+            {
+                // labels state/status
+                e.FormattedValues.TryGetValue("statecode", out var stateLabel);
+                e.FormattedValues.TryGetValue("statuscode", out var statusLabel);
+
+                // lookups
+                var curRef = e.GetAttributeValue<EntityReference>("transactioncurrencyid");
+                var plRef = e.GetAttributeValue<EntityReference>("pricelevelid");
+
+                // total
+                var totalMoney = e.GetAttributeValue<Money>("totalamount");
+
+                list.Add(new QuoteSummary
+                {
+                    QuoteId = e.Id,
+                    Name = e.GetAttributeValue<string>("name") ?? "",
+                    CreatedOn = e.GetAttributeValue<DateTime?>("createdon"),
+                    TotalAmount = totalMoney?.Value,
+
+                    CurrencyName = curRef?.Name,
+                    PriceListName = plRef?.Name,
+
+                    StateLabel = stateLabel ?? "",
+                    StatusLabel = statusLabel ?? ""
+                });
+            }
+
+            return list;
+        }
+
     }
 }

@@ -14,10 +14,13 @@ namespace RolixSAEProject.Services
 
         // ✅ Table + champs EXACTS
         private const string SavTable = "crda6_sav";
-        private const string ColClientSav = "crda6_clientsav";                  // lookup -> account
-        private const string ColCommandeSav = "crda6_commandesav";              // lookup -> commandes
-        private const string ColDescriptionProbleme = "crda6_descriptionprobleme"; // texte
-        private const string ColProduitSav = "crda6_produitsav";                // lookup -> product
+        private const string ColClientSav = "crda6_clientsav";                    // lookup -> account
+        private const string ColCommandeSav = "crda6_commandesav";                // lookup -> commandes
+        private const string ColDescriptionProbleme = "crda6_descriptionprobleme";// texte
+        private const string ColProduitSav = "crda6_produitsav";                  // lookup -> product
+
+        // ✅ NOUVEAU Choice: 0 Accepté / 1 Refusé / 2 En cours de traitement
+        private const string ColStatusSav = "crda6_statusav";
 
         // ✅ Change si besoin (si ta table commandes n'est pas salesorder)
         private const string OrderEntityLogicalName = "salesorder";
@@ -50,6 +53,9 @@ namespace RolixSAEProject.Services
             sav[ColProduitSav] = new EntityReference("product", productId);
             sav[ColDescriptionProbleme] = description.Trim();
 
+            // ✅ optionnel: tu peux initialiser le status au moment de créer
+            // sav[ColStatusSav] = new OptionSetValue(2); // En cours de traitement
+
             var savId = _client.Create(sav);
             return savId;
         }
@@ -67,6 +73,7 @@ namespace RolixSAEProject.Services
                     ColDescriptionProbleme,
                     ColCommandeSav,
                     ColProduitSav,
+                    ColStatusSav,     // ✅ IMPORTANT
                     ColState,
                     ColStatus
                 ),
@@ -83,7 +90,6 @@ namespace RolixSAEProject.Services
             q.AddOrder(ColCreatedOn, OrderType.Descending);
 
             var rows = _client.RetrieveMultiple(q).Entities;
-
             var list = new List<SavRequestItem>();
 
             foreach (var e in rows)
@@ -91,8 +97,13 @@ namespace RolixSAEProject.Services
                 var orderRef = e.GetAttributeValue<EntityReference>(ColCommandeSav);
                 var prodRef = e.GetAttributeValue<EntityReference>(ColProduitSav);
 
+                // labels "state/status"
                 e.FormattedValues.TryGetValue(ColState, out var stateLabel);
                 e.FormattedValues.TryGetValue(ColStatus, out var statusLabel);
+
+                // ✅ value + label du Choice crda6_statusav
+                var statusSavValue = e.GetAttributeValue<OptionSetValue>(ColStatusSav)?.Value;
+                e.FormattedValues.TryGetValue(ColStatusSav, out var statusSavLabel);
 
                 list.Add(new SavRequestItem
                 {
@@ -106,8 +117,13 @@ namespace RolixSAEProject.Services
                     ProductId = prodRef?.Id,
                     ProductName = prodRef?.Name,
 
+                    // état Dataverse
                     StateLabel = stateLabel ?? "",
-                    StatusLabel = statusLabel ?? ""
+                    StatusLabel = statusLabel ?? "",
+
+                    // ✅ ton status SAV
+                    StatusSavValue = statusSavValue,
+                    StatusSavLabel = statusSavLabel ?? ""
                 });
             }
 

@@ -11,12 +11,18 @@ namespace RolixSAEProject.Controllers
         private readonly CustomerAccountService _accountService;
         private readonly OrderService _orderService;
         private readonly SavService _savService;
+        private readonly QuoteService _quoteService;
 
-        public AccountController(CustomerAccountService accountService, OrderService orderService, SavService savService)
+        public AccountController(
+            CustomerAccountService accountService,
+            OrderService orderService,
+            SavService savService,
+            QuoteService quoteService)
         {
             _accountService = accountService;
             _orderService = orderService;
             _savService = savService;
+            _quoteService = quoteService;
         }
 
         // ✅ URL: /Account
@@ -34,27 +40,25 @@ namespace RolixSAEProject.Controllers
                 return RedirectToAction("Login", "Auth", new { returnUrl = "/Account" });
             }
 
-            // ✅ commandes
             var orders = new List<OrderSummary>();
-
-            // ✅ demandes SAV
             var savs = new List<SavRequestItem>();
+            var quotes = new List<QuoteSummary>();
 
             if (Guid.TryParse(accountIdStr, out var accountId))
             {
-                orders = _orderService.GetOrdersForAccount(accountId, top: 30);
+                orders = _orderService.GetOrdersForAccount(accountId, top: 50);
                 savs = _savService.GetSavRequestsByAccount(accountId, top: 50);
+                quotes = _quoteService.GetQuotesForAccount(accountId, top: 50);
             }
 
-            // ✅ ViewModel (ton existant)
+            ViewBag.SavRequests = savs;
+            ViewBag.Quotes = quotes;
+
             var vm = new AccountPageViewModel
             {
                 Profile = profile,
                 Orders = orders
             };
-
-            // ✅ On passe les SAV sans casser ton VM
-            ViewBag.SavRequests = savs;
 
             return View("~/Views/Auth/Account.cshtml", vm);
         }

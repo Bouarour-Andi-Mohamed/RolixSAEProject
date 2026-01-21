@@ -1,14 +1,115 @@
 @model RolixSAEProject.Models.AccountPageViewModel
+@using RolixSAEProject.Models
 
 @{
     ViewData["Title"] = "Mon compte";
     var p = Model.Profile;
-}
-@using RolixSAEProject.Models
-@{
+
     var savs = ViewBag.SavRequests as List<SavRequestItem> ?? new List<SavRequestItem>();
+    var quotes = ViewBag.Quotes as List<QuoteSummary> ?? new List<QuoteSummary>();
 }
 
+@functions {
+    string SavBadgeClass(int? v) => v switch
+    {
+        0 => "badge badge-ok",
+        1 => "badge badge-no",
+        2 => "badge badge-pending",
+        _ => "badge badge-neutral"
+    };
+
+    string SavBadgeText(int? v, string label)
+    {
+        if (!string.IsNullOrWhiteSpace(label)) return label;
+        return v switch
+        {
+            0 => "Accepté",
+            1 => "Refusé",
+            2 => "En cours de traitement",
+            _ => "Statut inconnu"
+        };
+    }
+
+    string QuoteStateBadge(string stateLabel)
+    {
+        var s = (stateLabel ?? "").ToLowerInvariant();
+        if (s.Contains("brouillon") || s.Contains("draft")) return "badge badge-neutral";
+        if (s.Contains("actif") || s.Contains("active")) return "badge badge-pending";
+        if (s.Contains("gagn") || s.Contains("won") || s.Contains("valid")) return "badge badge-ok";
+        if (s.Contains("ferm") || s.Contains("close") || s.Contains("annul")) return "badge badge-no";
+        return "badge badge-neutral";
+    }
+}
+
+<style>
+    .tabsbar {
+        margin-top: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        gap: 10px;
+    }
+
+    .tabbtn {
+        border: 0;
+        background: none;
+        padding: 10px 6px;
+        cursor: pointer;
+    }
+
+        .tabbtn.active {
+            font-weight: 700;
+            border-bottom: 2px solid #111;
+        }
+
+        .tabbtn:not(.active) {
+            font-weight: 400;
+            border-bottom: 2px solid transparent;
+        }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        min-width: 230px;
+    }
+
+    .badge-ok {
+        background: #ecfdf5;
+        border-color: #10b981;
+        color: #065f46;
+    }
+
+    .badge-no {
+        background: #fef2f2;
+        border-color: #ef4444;
+        color: #7f1d1d;
+    }
+
+    .badge-pending {
+        background: #fffbeb;
+        border-color: #f59e0b;
+        color: #78350f;
+    }
+
+    .badge-neutral {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        color: #111827;
+    }
+
+    .card {
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        padding: 14px;
+    }
+</style>
 
 <div class="page-wrapper">
     <div class="page-hero">
@@ -16,48 +117,201 @@
         <h1 class="hero-title">Mon compte</h1>
         <p class="hero-subtitle">Bienvenue, @p.NomCompte</p>
     </div>
-    <div style="margin-top:16px;border-bottom:1px solid #e5e7eb;display:flex;gap:10px;">
-        <button type="button" class="acc-tab-btn" data-tab="profile"
-                style="border:0;background:none;padding:10px 6px;cursor:pointer;font-weight:600;">
-            Profil
-        </button>
 
-        <button type="button" class="acc-tab-btn" data-tab="sav"
-                style="border:0;background:none;padding:10px 6px;cursor:pointer;">
-            Mes demandes SAV
-        </button>
+    <!-- Tabs -->
+    <div class="tabsbar">
+        <button type="button" class="tabbtn" data-tab="profile">Profil</button>
+        <button type="button" class="tabbtn" data-tab="orders">Mes commandes</button>
+        <button type="button" class="tabbtn" data-tab="quotes">Mes devis</button>
+        <button type="button" class="tabbtn" data-tab="sav">Mes demandes SAV</button>
     </div>
 
-    <div id="acc-tab-profile" class="acc-tab" style="padding-top:14px;">
-        <!-- ✅ Ici tu laisses ton contenu actuel "profil / infos / logout" -->
-        <!-- Exemple: rien à bouger, tu gardes ce que tu as déjà -->
-    </div>
+    <!-- PROFIL -->
+    <div id="tab-profile" class="tab" style="padding-top:14px;">
+        <section class="section-shell" style="max-width:980px;margin:0 auto;">
+            <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                <div>
+                    <div style="font-weight:700;font-size:16px;">@p.NomCompte</div>
+                    <div style="color:#6b7280;font-size:14px;">Identifiant: @p.Identifiant</div>
+                </div>
 
-    <div id="acc-tab-sav" class="acc-tab" style="display:none;padding-top:14px;">
-        <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.04em;">Mes demandes SAV</h2>
-
-        @if (savs.Count == 0)
-        {
-            <div style="border:1px solid #e5e7eb;background:#fff;padding:14px;color:#6b7280;">
-                Aucune demande SAV pour le moment.
+                <a asp-controller="Auth" asp-action="Logout"
+                   style="border:1px solid #111;background:#fff;color:#111;padding:10px 14px;text-decoration:none;">
+                    Se déconnecter
+                </a>
             </div>
-        }
-        else
-        {
-            <div style="display:grid;gap:10px;">
-                @foreach (var s in savs)
+
+            <div class="card" style="color:#6b7280;">
+                Vous pouvez consulter vos commandes, vos devis et vos demandes SAV via les onglets.
+            </div>
+        </section>
+    </div>
+
+    <!-- COMMANDES -->
+    <div id="tab-orders" class="tab" style="display:none;padding-top:14px;">
+        <section class="section-shell" style="max-width:980px;margin:0 auto;">
+            <div class="card">
+                <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.06em;">Mes commandes</h2>
+
+                @if (Model.Orders == null || Model.Orders.Count == 0)
                 {
-                    <div style="border:1px solid #e5e7eb;background:#fff;padding:14px;">
-                        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
-                            <div>
-                                <div style="font-weight:700;">
-                                    SAV #@s.SavId.ToString().Substring(0, 8)
+                    <p style="margin:0;color:#6b7280;">Aucune commande trouvée.</p>
+                }
+                else
+                {
+                    <div style="display:grid;gap:12px;">
+                        @foreach (var o in Model.Orders)
+                        {
+                            <div style="border:1px solid #eee;padding:12px;">
+                                <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;">
+                                    <div>
+                                        <div style="font-weight:700;">@o.Name</div>
+                                        <div style="color:#6b7280;font-size:13px;">
+                                            @if (o.CreatedOn.HasValue)
+                                            {
+                                                <span>@o.CreatedOn.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(o.StatusLabel))
+                                            {
+                                                <span> | @o.StatusLabel</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <a asp-controller="Sav" asp-action="Create" asp-route-orderId="@o.OrderId"
+                                       style="border:1px solid #111;background:#111;color:#fff;padding:8px 10px;text-decoration:none;">
+                                        Demander un SAV
+                                    </a>
                                 </div>
-                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">
-                                    @((s.CreatedOn?.ToString("dd/MM/yyyy HH:mm")) ?? "—")
+
+                                @if (o.Lines != null && o.Lines.Count > 0)
+                                {
+                                    <div style="margin-top:10px;border-top:1px solid #f2f2f2;padding-top:10px;">
+                                        <div style="font-size:13px;color:#6b7280;margin-bottom:6px;">Détails</div>
+                                        <div style="display:grid;gap:6px;">
+                                            @foreach (var l in o.Lines)
+                                            {
+                                                <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px;">
+                                                    <div>@(string.IsNullOrWhiteSpace(l.ProductName) ? "Produit" : l.ProductName)</div>
+                                                    <div style="color:#6b7280;">x @l.Quantity</div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+
+    <!-- DEVIS -->
+    <div id="tab-quotes" class="tab" style="display:none;padding-top:14px;">
+        <section class="section-shell" style="max-width:980px;margin:0 auto;">
+            <div class="card">
+                <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.06em;">Mes demandes de devis</h2>
+
+                @if (quotes.Count == 0)
+                {
+                    <p style="margin:0;color:#6b7280;">Aucune demande de devis trouvée.</p>
+                }
+                else
+                {
+                    <div style="display:grid;gap:10px;">
+                        @foreach (var q in quotes)
+                        {
+                            <div style="border:1px solid #eee;padding:12px;">
+                                <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+                                    <div>
+                                        <div style="font-weight:700;">
+                                            @(!string.IsNullOrWhiteSpace(q.Name) ? q.Name : $"Devis #{q.QuoteId.ToString().Substring(0, 8)}")
+                                        </div>
+                                        <div style="color:#6b7280;font-size:13px;margin-top:2px;">
+                                            @((q.CreatedOn?.ToString("dd/MM/yyyy HH:mm")) ?? "—")
+                                            @if (!string.IsNullOrWhiteSpace(q.CurrencyName))
+                                            {
+                                                <span> • Devise: @q.CurrencyName</span>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(q.PriceListName))
+                                            {
+                                                <span> • Tarif: @q.PriceListName</span>
+                                            }
+                                        </div>
+
+                                        @if (q.TotalAmount.HasValue)
+                                        {
+                                            <div style="margin-top:8px;font-size:15px;">
+                                                <strong>Total:</strong> @q.TotalAmount.Value.ToString("N2")
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <span class="@QuoteStateBadge(q.StateLabel)">
+                                        @(string.IsNullOrWhiteSpace(q.StateLabel) ? "Statut" : q.StateLabel)
+                                    </span>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(q.StatusLabel))
+                                {
+                                    <div style="margin-top:8px;color:#6b7280;font-size:13px;">
+                                        @q.StatusLabel
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+
+    <!-- SAV -->
+    <div id="tab-sav" class="tab" style="display:none;padding-top:14px;">
+        <section class="section-shell" style="max-width:980px;margin:0 auto;">
+            <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.04em;">Mes demandes SAV</h2>
+
+            @if (savs.Count == 0)
+            {
+                <div class="card" style="color:#6b7280;">
+                    Aucune demande SAV pour le moment.
+                </div>
+            }
+            else
+            {
+                <div style="display:grid;gap:10px;">
+                    @foreach (var s in savs)
+                    {
+                        <div class="card">
+                            <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+                                <div>
+                                    <div style="font-weight:700;">
+                                        SAV #@s.SavId.ToString().Substring(0, 8)
+                                    </div>
+                                    <div style="color:#6b7280;font-size:13px;margin-top:2px;">
+                                        @((s.CreatedOn?.ToString("dd/MM/yyyy HH:mm")) ?? "—")
+                                    </div>
+                                </div>
+
+                                <span class="@SavBadgeClass(s.StatusSavValue)">
+                                    @SavBadgeText(s.StatusSavValue, s.StatusSavLabel)
+                                </span>
+                            </div>
+
+                            <div style="margin-top:10px;font-size:14px;display:grid;gap:6px;">
+                                <div><strong>Commande :</strong> @(string.IsNullOrWhiteSpace(s.OrderName) ? "—" : s.OrderName)</div>
+                                <div><strong>Produit :</strong> @(string.IsNullOrWhiteSpace(s.ProductName) ? "—" : s.ProductName)</div>
+
+                                <div style="margin-top:6px;color:#374151;white-space:pre-line;">
+                                    <strong>Problème :</strong><br />
+                                    @(!string.IsNullOrWhiteSpace(s.DescriptionProbleme) ? s.DescriptionProbleme : "—")
+                                </div>
+
+                                <div style="margin-top:6px;color:#6b7280;font-size:13px;">
                                     @if (!string.IsNullOrWhiteSpace(s.StateLabel))
                                     {
-                                        <span> • @s.StateLabel</span>
+                                        <span>@s.StateLabel</span>
                                     }
                                     @if (!string.IsNullOrWhiteSpace(s.StatusLabel))
                                     {
@@ -66,112 +320,31 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div style="margin-top:10px;font-size:14px;display:grid;gap:6px;">
-                            <div><strong>Commande :</strong> @(string.IsNullOrWhiteSpace(s.OrderName) ? "—" : s.OrderName)</div>
-                            <div><strong>Produit :</strong> @(string.IsNullOrWhiteSpace(s.ProductName) ? "—" : s.ProductName)</div>
-                            <div style="margin-top:6px;color:#374151;white-space:pre-line;">
-                                <strong>Problème :</strong><br />
-                                @(!string.IsNullOrWhiteSpace(s.DescriptionProbleme) ? s.DescriptionProbleme : "—")
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        }
+                    }
+                </div>
+            }
+        </section>
     </div>
 
     <script>
         (function () {
-            const btns = document.querySelectorAll(".acc-tab-btn");
+            const btns = document.querySelectorAll(".tabbtn");
             const tabs = {
-                profile: document.getElementById("acc-tab-profile"),
-                sav: document.getElementById("acc-tab-sav")
+                profile: document.getElementById("tab-profile"),
+                orders: document.getElementById("tab-orders"),
+                quotes: document.getElementById("tab-quotes"),
+                sav: document.getElementById("tab-sav")
             };
 
             function show(tabName) {
                 Object.keys(tabs).forEach(k => {
                     tabs[k].style.display = (k === tabName) ? "" : "none";
                 });
-                btns.forEach(b => {
-                    const active = b.getAttribute("data-tab") === tabName;
-                    b.style.fontWeight = active ? "700" : "400";
-                    b.style.borderBottom = active ? "2px solid #111" : "2px solid transparent";
-                });
+                btns.forEach(b => b.classList.toggle("active", b.getAttribute("data-tab") === tabName));
             }
 
             btns.forEach(b => b.addEventListener("click", () => show(b.getAttribute("data-tab"))));
             show("profile");
         })();
     </script>
-
-
-    <section class="section-shell" style="max-width:980px;margin:0 auto;">
-        <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div>
-                <div style="font-weight:700;font-size:16px;">@p.NomCompte</div>
-                <div style="color:#6b7280;font-size:14px;">Identifiant: @p.Identifiant</div>
-            </div>
-
-            <a asp-controller="Auth" asp-action="Logout"
-               style="border:1px solid #111;background:#fff;color:#111;padding:10px 14px;text-decoration:none;">
-                Se déconnecter
-            </a>
-        </div>
-
-        <div style="border:1px solid #e5e7eb;background:#fff;padding:16px;">
-            <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.06em;">Mes commandes</h2>
-
-            @if (Model.Orders == null || Model.Orders.Count == 0)
-            {
-                <p style="margin:0;color:#6b7280;">Aucune commande trouvée.</p>
-            }
-            else
-            {
-                <div style="display:grid;gap:12px;">
-                    @foreach (var o in Model.Orders)
-                    {
-                        <div style="border:1px solid #eee;padding:12px;">
-                            <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;">
-                                <div>
-                                    <div style="font-weight:700;">@o.Name</div>
-                                    <div style="color:#6b7280;font-size:13px;">
-                                        @if (o.CreatedOn.HasValue)
-                                        {
-                                            <span>@o.CreatedOn.Value.ToString("dd/MM/yyyy HH:mm")</span>
-                                        }
-                                        @if (!string.IsNullOrWhiteSpace(o.StatusLabel))
-                                        {
-                                            <span> | @o.StatusLabel</span>
-                                        }
-                                    </div>
-                                </div>
-
-                                <a asp-controller="Sav" asp-action="Create" asp-route-orderId="@o.OrderId"
-                                   style="border:1px solid #111;background:#111;color:#fff;padding:8px 10px;text-decoration:none;">
-                                    Demander un SAV
-                                </a>
-                            </div>
-
-                            @if (o.Lines != null && o.Lines.Count > 0)
-                            {
-                                <div style="margin-top:10px;border-top:1px solid #f2f2f2;padding-top:10px;">
-                                    <div style="font-size:13px;color:#6b7280;margin-bottom:6px;">Détails</div>
-                                    <div style="display:grid;gap:6px;">
-                                        @foreach (var l in o.Lines)
-                                        {
-                                            <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px;">
-                                                <div>@(string.IsNullOrWhiteSpace(l.ProductName) ? "Produit" : l.ProductName)</div>
-                                                <div style="color:#6b7280;">x @l.Quantity</div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-    </section>
 </div>

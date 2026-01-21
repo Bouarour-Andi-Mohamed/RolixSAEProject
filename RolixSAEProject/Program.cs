@@ -75,6 +75,7 @@ builder.Services.AddSingleton<CustomerAccountService>();
 builder.Services.AddSingleton<OrderService>();
 builder.Services.AddSingleton<SavService>();
 builder.Services.AddSingleton<SavService>();
+builder.Services.AddSingleton<QuoteService>();
 
 
 
