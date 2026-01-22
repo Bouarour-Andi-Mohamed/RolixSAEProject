@@ -11,17 +11,20 @@ namespace RolixSAEProject.Controllers
         private readonly CustomerAccountService _accountService;
         private readonly OrderService _orderService;
         private readonly SavService _savService;
-        private readonly QuoteService _quoteService;
+        private readonly InvoiceService _invoiceService;
+        private readonly QuoteService _quoteService; // ✅ pour "Mes devis"
 
         public AccountController(
             CustomerAccountService accountService,
             OrderService orderService,
             SavService savService,
+            InvoiceService invoiceService,
             QuoteService quoteService)
         {
             _accountService = accountService;
             _orderService = orderService;
             _savService = savService;
+            _invoiceService = invoiceService;
             _quoteService = quoteService;
         }
 
@@ -41,23 +44,32 @@ namespace RolixSAEProject.Controllers
             }
 
             var orders = new List<OrderSummary>();
-            var savs = new List<SavRequestItem>();
-            var quotes = new List<QuoteSummary>();
+            var invoices = new List<InvoiceSummary>();
+
+            // ViewBag data (SAV + Devis)
+            ViewBag.SavRequests = new List<SavRequestItem>();
+            ViewBag.QuoteRequests = new List<QuoteSummary>();
 
             if (Guid.TryParse(accountIdStr, out var accountId))
             {
+                // ✅ Commandes
                 orders = _orderService.GetOrdersForAccount(accountId, top: 50);
-                savs = _savService.GetSavRequestsByAccount(accountId, top: 50);
-                quotes = _quoteService.GetQuotesForAccount(accountId, top: 50);
-            }
 
-            ViewBag.SavRequests = savs;
-            ViewBag.Quotes = quotes;
+                // ✅ Factures
+                invoices = _invoiceService.GetInvoicesForAccount(accountId, top: 50);
+
+                // ✅ SAV
+                ViewBag.SavRequests = _savService.GetSavRequestsByAccount(accountId, top: 50);
+
+                // ✅ Devis
+                ViewBag.QuoteRequests = _quoteService.GetQuotesForAccount(accountId, top: 50);
+            }
 
             var vm = new AccountPageViewModel
             {
                 Profile = profile,
-                Orders = orders
+                Orders = orders,
+                Invoices = invoices
             };
 
             return View("~/Views/Auth/Account.cshtml", vm);

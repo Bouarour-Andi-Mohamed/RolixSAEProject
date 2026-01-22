@@ -6,7 +6,9 @@
     var p = Model.Profile;
 
     var savs = ViewBag.SavRequests as List<SavRequestItem> ?? new List<SavRequestItem>();
-    var quotes = ViewBag.Quotes as List<QuoteSummary> ?? new List<QuoteSummary>();
+
+    // ✅ IMPORTANT : on lit QuoteRequests (sinon tes devis n'apparaissent pas si le controller remplit ViewBag.QuoteRequests)
+    var quotes = ViewBag.QuoteRequests as List<QuoteSummary> ?? new List<QuoteSummary>();
 }
 
 @functions {
@@ -39,6 +41,44 @@
         if (s.Contains("ferm") || s.Contains("close") || s.Contains("annul")) return "badge badge-no";
         return "badge badge-neutral";
     }
+
+    // ✅ Affichage côté site : Brouillon => En cours de traitement
+    string QuoteStateTextForSite(string stateLabel)
+    {
+        var s = (stateLabel ?? "").Trim();
+        var low = s.ToLowerInvariant();
+
+        if (low.Contains("brouillon") || low.Contains("draft"))
+            return "En cours de traitement";
+
+        return string.IsNullOrWhiteSpace(s) ? "Statut" : s;
+    }
+
+    // Factures (statuscode mapping)
+    string InvoiceBadgeClass(int? code) => code switch
+    {
+        4 => "badge badge-ok",        // Facturé
+        2 => "badge badge-pending",   // Partiellement livré
+        1 => "badge badge-neutral",   // Nouveau
+        5 => "badge badge-pending",   // Réservé
+        6 => "badge badge-ok",        // Installé
+        _ => "badge badge-neutral"
+    };
+
+    string InvoiceStatusLabel(int? code, string? label)
+    {
+        if (!string.IsNullOrWhiteSpace(label)) return label;
+
+        return code switch
+        {
+            1 => "Nouveau",
+            2 => "Partiellement livré",
+            4 => "Facturé",
+            5 => "Réservé",
+            6 => "Installé",
+            _ => "Statut inconnu"
+        };
+    }
 }
 
 <style>
@@ -47,6 +87,7 @@
         border-bottom: 1px solid #e5e7eb;
         display: flex;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .tabbtn {
@@ -78,6 +119,7 @@
         text-transform: uppercase;
         border: 1px solid transparent;
         min-width: 230px;
+        text-align: center;
     }
 
     .badge-ok {
@@ -123,6 +165,7 @@
         <button type="button" class="tabbtn" data-tab="profile">Profil</button>
         <button type="button" class="tabbtn" data-tab="orders">Mes commandes</button>
         <button type="button" class="tabbtn" data-tab="quotes">Mes devis</button>
+        <button type="button" class="tabbtn" data-tab="invoices">Mes factures</button>
         <button type="button" class="tabbtn" data-tab="sav">Mes demandes SAV</button>
     </div>
 
@@ -142,7 +185,7 @@
             </div>
 
             <div class="card" style="color:#6b7280;">
-                Vous pouvez consulter vos commandes, vos devis et vos demandes SAV via les onglets.
+                Vous pouvez consulter vos commandes, vos devis, vos factures et vos demandes SAV via les onglets.
             </div>
         </section>
     </div>
@@ -249,7 +292,7 @@
                                     </div>
 
                                     <span class="@QuoteStateBadge(q.StateLabel)">
-                                        @(string.IsNullOrWhiteSpace(q.StateLabel) ? "Statut" : q.StateLabel)
+                                        @QuoteStateTextForSite(q.StateLabel)
                                     </span>
                                 </div>
 
@@ -259,6 +302,56 @@
                                         @q.StatusLabel
                                     </div>
                                 }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+
+    <!-- FACTURES -->
+    <div id="tab-invoices" class="tab" style="display:none;padding-top:14px;">
+        <section class="section-shell" style="max-width:980px;margin:0 auto;">
+            <div class="card">
+                <h2 style="margin:0 0 10px;font-size:16px;letter-spacing:.06em;">Mes factures</h2>
+
+                @if (Model.Invoices == null || Model.Invoices.Count == 0)
+                {
+                    <p style="margin:0;color:#6b7280;">Aucune facture trouvée.</p>
+                }
+                else
+                {
+                    <div style="display:grid;gap:10px;">
+                        @foreach (var inv in Model.Invoices)
+                        {
+                            <div style="border:1px solid #eee;padding:12px;">
+                                <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+                                    <div>
+                                        <div style="font-weight:700;">
+                                            @(string.IsNullOrWhiteSpace(inv.Name) ? $"Facture #{inv.InvoiceId.ToString().Substring(0, 8)}" : inv.Name)
+                                        </div>
+
+                                        <div style="color:#6b7280;font-size:13px;margin-top:2px;">
+                                            @((inv.CreatedOn?.ToString("dd/MM/yyyy HH:mm")) ?? "—")
+                                            @if (!string.IsNullOrWhiteSpace(inv.OrderName))
+                                            {
+                                                <span> • Commande: @inv.OrderName</span>
+                                            }
+                                        </div>
+
+                                        @if (inv.TotalAmount.HasValue)
+                                        {
+                                            <div style="margin-top:8px;font-size:15px;">
+                                                <strong>Total:</strong> @inv.TotalAmount.Value.ToString("N2")
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <span class="@InvoiceBadgeClass(inv.StatusCode)">
+                                        @InvoiceStatusLabel(inv.StatusCode, inv.StatusLabel)
+                                    </span>
+                                </div>
                             </div>
                         }
                     </div>
@@ -333,11 +426,13 @@
                 profile: document.getElementById("tab-profile"),
                 orders: document.getElementById("tab-orders"),
                 quotes: document.getElementById("tab-quotes"),
+                invoices: document.getElementById("tab-invoices"),
                 sav: document.getElementById("tab-sav")
             };
 
             function show(tabName) {
                 Object.keys(tabs).forEach(k => {
+                    if (!tabs[k]) return;
                     tabs[k].style.display = (k === tabName) ? "" : "none";
                 });
                 btns.forEach(b => b.classList.toggle("active", b.getAttribute("data-tab") === tabName));

@@ -8,5 +8,6 @@ namespace RolixSAEProject.Models
 
         // onglet commandes
         public List<OrderSummary> Orders { get; set; } = new List<OrderSummary>();
+        public List<InvoiceSummary> Invoices { get; set; } = new List<InvoiceSummary>();
     }
 }
