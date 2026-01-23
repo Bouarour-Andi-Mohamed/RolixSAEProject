@@ -1,0 +1,42 @@
+﻿@model RolixSAEProject.Models.AvisViewModel
+
+@{
+    ViewData["Title"] = "Laisser un avis";
+}
+
+<div style="max-width:600px; margin: 40px auto; padding: 25px; border: 1px solid #e5e7eb; background: #fff; font-family: sans-serif;">
+    <h2 style="margin-top:0; font-size: 20px;">Donnez votre avis sur votre commande</h2>
+    <p style="color:#6b7280; font-size: 14px;">Référence commande : @Model.OrderId</p>
+    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;" />
+
+    <form asp-controller="Avis" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="OrderId" />
+
+        <div style="margin-bottom:20px;">
+            <label style="display:block; font-weight:bold; margin-bottom:8px;">Quelle note donnez-vous ? (1 à 5)</label>
+            <select asp-for="Note" style="width:100%; padding:12px; border:1px solid #ddd; border-radius: 4px;" required>
+                <option value="">-- Choisissez une note --</option>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Très bon</option>
+                <option value="3">3 - Moyen</option>
+                <option value="2">2 - Décevant</option>
+                <option value="1">1 - Très mauvais</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom:25px;">
+            <label style="display:block; font-weight:bold; margin-bottom:8px;">Votre commentaire</label>
+            <textarea asp-for="Commentaire" rows="6" style="width:100%; padding:12px; border:1px solid #ddd; border-radius: 4px; resize: vertical;" placeholder="Dites-nous ce que vous avez pensé de votre achat..."></textarea>
+        </div>
+
+        <div style="display:flex; gap:15px; align-items: center;">
+            <button type="submit" style="background:#111; color:#fff; border:0; padding:12px 25px; font-weight: 600; cursor:pointer; border-radius: 4px;">
+                Envoyer mon avis
+            </button>
+            <a asp-controller="Auth" asp-action="Account" style="text-decoration:none; color:#6b7280; font-size: 14px;">
+                Retour au compte
+            </a>
+        </div>
+    </form>
+</div>

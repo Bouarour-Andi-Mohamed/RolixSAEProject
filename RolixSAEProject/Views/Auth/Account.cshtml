@@ -225,6 +225,13 @@
                                        style="border:1px solid #111;background:#111;color:#fff;padding:8px 10px;text-decoration:none;">
                                         Demander un SAV
                                     </a>
+                                    @if (o.StatusLabel == "Payé" || o.StatusLabel == "Terminé")
+                                    {
+                                        <a asp-controller="Avis" asp-action="Create" asp-route-orderId="@o.OrderId"
+                                           style="border:1px solid #111;background:#fff;color:#111;padding:8px 10px;text-decoration:none;margin-left:8px;">
+                                            Laisser un avis
+                                        </a>
+                                    }
                                 </div>
 
                                 @if (o.Lines != null && o.Lines.Count > 0)
