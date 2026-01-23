@@ -35,6 +35,11 @@
                     <label>Mot de passe</label>
                     <input name="motDePasse" type="password" autocomplete="current-password" />
                 </div>
+                <div style="margin-top:10px;text-align:center;">
+                    <a asp-controller="Auth" asp-action="ForgotPassword" style="color:#111;text-decoration:none;">
+                        Mot de passe oublié ?
+                    </a>
+                </div>
 
                 <div class="login-actions">
                     <button class="button login-submit" type="submit">Se connecter</button>
