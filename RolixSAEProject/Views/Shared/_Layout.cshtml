@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="~/RolixSAEProject.styles.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+
 </head>
 <body>
     @{
@@ -134,9 +137,121 @@
         </div>
     </footer>
 
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+   
+ 
+    <style>
+        .cc-window {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.35);
+            padding: 14px 16px;
+            line-height: 1.35;
+        }
+
+        .cc-message {
+            font-size: 14px;
+            max-width: 70ch;
+        }
+
+        .cc-link {
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            font-weight: 600;
+        }
+
+            .cc-link:focus-visible {
+                outline: 3px solid rgba(255, 255, 255, 0.6);
+                outline-offset: 3px;
+                border-radius: 6px;
+            }
+
+        .cc-btn {
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            border: 1px solid rgba(17, 24, 39, 0.25);
+            transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+        }
+
+            .cc-btn:hover {
+                filter: brightness(0.98);
+            }
+
+            .cc-btn:active {
+                transform: translateY(1px);
+            }
+
+            .cc-btn:focus-visible {
+                outline: 3px solid rgba(249, 250, 251, 0.55);
+                outline-offset: 3px;
+            }
+
+        /* Bouton "Refuser" en style secondaire */
+        .cc-deny {
+            background: transparent !important;
+            color: #f9fafb !important;
+            border: 1px solid rgba(249, 250, 251, 0.35) !important;
+            box-shadow: none !important;
+        }
+    </style>
+
+    <script>
+        // 1) Mets ici ce que tu veux ACTIVER uniquement après consentement
+        function enableNonEssentialCookies() {
+          // Exemple: activer Google Analytics / Matomo / etc.
+          // -> tu mets ton code ici (et seulement ici)
+          console.log("✅ Consentement OK: scripts non essentiels autorisés");
+        }
+
+        function disableNonEssentialCookies() {
+          console.log("⛔ Consentement refusé: scripts non essentiels bloqués");
+        }
+
+        window.addEventListener("load", function () {
+          window.cookieconsent.initialise({
+            type: "opt-in", // important: rien avant acceptation
+            theme: "classic",
+            position: "bottom",
+            palette: {
+              popup: { background: "#111827", text: "#F9FAFB" }, // fond + texte
+              button: { background: "#F9FAFB", text: "#111827" } // bouton principal
+            },
+
+            // Texte RGPD simple mais plus clean
+            content: {
+              message:
+                "Nous utilisons des cookies pour mesurer l’audience et améliorer votre expérience. Vous pouvez accepter ou refuser les cookies non essentiels.",
+              allow: "Accepter",
+              deny: "Refuser",
+              link: "Politique de cookies",
+              href: "/Home/Privacy"
+            },
+
+            // 2) Opt-in réel : tu déclenches tes scripts seulement si accepté
+            onInitialise: function () {
+              if (this.hasConsented()) enableNonEssentialCookies();
+              else disableNonEssentialCookies();
+            },
+            onStatusChange: function () {
+              if (this.hasConsented()) enableNonEssentialCookies();
+              else disableNonEssentialCookies();
+            },
+            onRevokeChoice: function () {
+              disableNonEssentialCookies();
+            }
+          });
+        });
+    </script>
+
+
+
 </body>
 </html>

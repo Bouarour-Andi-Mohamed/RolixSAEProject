@@ -1,11 +1,232 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer V
-
-@{
-    ViewData["Title"] = V["Terms_Title"];
+﻿@{
+    ViewData["Title"] = "Mentions légales & Conditions";
 }
 
-<div class="container py-5">
-    <h1 class="mb-3">@V["Terms_Title"]</h1>
-    <p>@V["Terms_Intro"]</p>
+<style>
+    .legal-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 32px 18px;
+    }
+
+    .legal-quick {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 14px 0 18px;
+    }
+
+        .legal-quick a {
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #111;
+            font-weight: 700;
+        }
+
+            .legal-quick a:hover {
+                border-color: #111;
+            }
+
+    .legal-card {
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        padding: 18px;
+        margin-top: 14px;
+    }
+
+        .legal-card h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .legal-card h3 {
+            margin: 14px 0 8px;
+            font-size: 15px;
+        }
+
+        .legal-card p, .legal-card li {
+            color: #374151;
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+    .muted {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .toplink {
+        display: block;
+        margin-top: 12px;
+        font-weight: 700;
+        color: #111;
+        text-decoration: none;
+    }
+</style>
+
+<div class="legal-wrap" id="top">
+    <h1 style="margin:0 0 8px;">Mentions légales, CGU/CGV, Confidentialité & Cookies</h1>
+    <p class="muted">
+        Cette page regroupe les informations obligatoires du site Rolix (conditions d’utilisation/vente, protection des données et cookies).
+        Les textes ci-dessous sont un modèle à adapter aux informations réelles de votre organisation.
+    </p>
+
+    <div class="legal-quick">
+        <a href="#mentions">Mentions légales</a>
+        <a href="#cgu">CGU / CGV</a>
+        <a href="#conf">Confidentialité (RGPD)</a>
+        <a href="#cookies">Cookies</a>
+    </div>
+
+    <!-- MENTIONS LEGALES -->
+    <section class="legal-card" id="mentions">
+        <h2>1) Mentions légales</h2>
+
+        <h3>Éditeur du site</h3>
+        <p>
+            <strong>Rolix</strong> (projet pédagogique).<br />
+            Adresse : <em>à compléter</em><br />
+            Email : <em>à compléter</em><br />
+            Téléphone : <em>à compléter</em>
+        </p>
+
+        <h3>Hébergement</h3>
+        <p>
+            Hébergeur : <em>à compléter</em><br />
+            Adresse : <em>à compléter</em>
+        </p>
+
+        <h3>Propriété intellectuelle</h3>
+        <p>
+            Les contenus (textes, visuels, logos, éléments graphiques) sont protégés. Toute reproduction ou utilisation non autorisée est interdite.
+        </p>
+
+        <h3>Responsabilité</h3>
+        <p>
+            Rolix s’efforce d’assurer l’exactitude des informations publiées. Toutefois, des erreurs ou omissions peuvent survenir.
+            L’utilisateur reste responsable de l’usage qu’il fait des informations et services proposés.
+        </p>
+
+        <a class="toplink" href="#top">↑ Retour en haut</a>
+    </section>
+
+    <!-- CGU / CGV -->
+    <section class="legal-card" id="cgu">
+        <h2>2) CGU / CGV (Conditions générales d’utilisation et de vente)</h2>
+
+        <h3>Accès au site et compte client</h3>
+        <ul>
+            <li>L’accès au site peut nécessiter la création d’un compte client.</li>
+            <li>Vous vous engagez à fournir des informations exactes et à les maintenir à jour.</li>
+            <li>Vous êtes responsable de la confidentialité de vos identifiants.</li>
+        </ul>
+
+        <h3>Produits, prix et devis</h3>
+        <ul>
+            <li>Les informations produits sont fournies à titre indicatif et peuvent évoluer.</li>
+            <li>Les prix peuvent varier selon la devise sélectionnée et la tarification associée.</li>
+            <li>Une demande de devis n’implique pas une vente automatique : elle déclenche un traitement par l’équipe Rolix.</li>
+        </ul>
+
+        <h3>Commande, paiement, facturation</h3>
+        <ul>
+            <li>Une commande peut être créée et suivie depuis l’espace client.</li>
+            <li>Le passage d’une commande au statut « Payé » peut déclencher la génération et la mise à disposition d’une facture.</li>
+            <li>Les modalités de paiement/livraison sont à préciser selon votre contexte.</li>
+        </ul>
+
+        <h3>SAV, retours et garanties</h3>
+        <ul>
+            <li>Le client peut effectuer une demande SAV depuis son compte (selon la commande concernée).</li>
+            <li>Le SAV suit un workflow de traitement (réception, diagnostic, réparation, clôture).</li>
+            <li>Les conditions de garantie (durée, exclusions, preuve d’achat, etc.) sont à définir et s’appliquent selon le dossier.</li>
+        </ul>
+
+        <h3>Contact</h3>
+        <p>
+            Pour toute question, contactez le support : <em>support@rolix… à compléter</em>.
+        </p>
+
+        <a class="toplink" href="#top">↑ Retour en haut</a>
+    </section>
+
+    <!-- CONFIDENTIALITE -->
+    <section class="legal-card" id="conf">
+        <h2>3) Politique de confidentialité (RGPD)</h2>
+
+        <h3>Données collectées</h3>
+        <p>
+            Nous pouvons collecter des données nécessaires au fonctionnement du service, par exemple :
+            identité du compte, email, informations de commande, demandes SAV, historiques liés à votre compte.
+        </p>
+
+        <h3>Finalités</h3>
+        <ul>
+            <li>Création et gestion du compte client.</li>
+            <li>Traitement des commandes, devis, factures et SAV.</li>
+            <li>Communication avec le client (emails de suivi, notifications liées au SAV/commande).</li>
+            <li>Sécurité et prévention des abus.</li>
+        </ul>
+
+        <h3>Base légale</h3>
+        <p>
+            Le traitement repose notamment sur l’exécution du service (gestion du compte/commande/SAV) et, le cas échéant, sur votre consentement (ex : cookies non essentiels).
+        </p>
+
+        <h3>Durées de conservation</h3>
+        <p>
+            Les données sont conservées le temps nécessaire au service et/ou selon les obligations légales (facturation, traçabilité).
+            Les durées exactes sont à définir selon votre organisation.
+        </p>
+
+        <h3>Destinataires</h3>
+        <p>
+            Les données sont accessibles uniquement aux personnes habilitées et aux outils nécessaires (ex : CRM/Dataverse, envoi email).
+            Aucun partage commercial non autorisé.
+        </p>
+
+        <h3>Vos droits</h3>
+        <ul>
+            <li>Droit d’accès, rectification, suppression.</li>
+            <li>Droit d’opposition et de limitation.</li>
+            <li>Droit à la portabilité (selon cas).</li>
+        </ul>
+        <p>
+            Pour exercer vos droits : <em>email de contact RGPD à compléter</em>.
+        </p>
+
+        <a class="toplink" href="#top">↑ Retour en haut</a>
+    </section>
+
+    <!-- COOKIES -->
+    <section class="legal-card" id="cookies">
+        <h2>4) Cookies</h2>
+
+        <h3>Qu’est-ce qu’un cookie ?</h3>
+        <p>
+            Un cookie est un petit fichier enregistré sur votre appareil permettant de faire fonctionner le site, de sécuriser la navigation,
+            et éventuellement de mesurer l’audience.
+        </p>
+
+        <h3>Cookies utilisés sur Rolix</h3>
+        <ul>
+            <li><strong>Cookies nécessaires</strong> : session, sécurité, navigation (indispensables au fonctionnement).</li>
+            <li><strong>Cookies de préférence</strong> : ex. devise, langue (si activés).</li>
+            <li><strong>Cookies de mesure</strong> : statistiques d’audience (uniquement si vous les activez / selon votre configuration).</li>
+        </ul>
+
+        <h3>Gestion des cookies</h3>
+        <p>
+            Vous pouvez gérer ou supprimer les cookies via les paramètres de votre navigateur.
+            Si vous refusez les cookies nécessaires, certaines fonctionnalités du site peuvent ne pas fonctionner correctement.
+        </p>
+
+        <a class="toplink" href="#top">↑ Retour en haut</a>
+    </section>
+
+    <p class="muted" style="margin-top:16px;">
+        Dernière mise à jour : <strong>@DateTime.Now.ToString("dd/MM/yyyy")</strong>
+    </p>
 </div>
