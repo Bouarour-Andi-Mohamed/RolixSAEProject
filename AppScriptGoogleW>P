@@ -1,0 +1,116 @@
+const LABEL_TO_PROCESS = "AUTO_PDF";
+const LABEL_DONE = "AUTO_PDF_DONE";
+const DRIVE_FOLDER_ID = "DRIVE FOLDER";
+
+const ALLOWED_DOMAINS = []; // exemple: ["gmail.com","....fr"]
+const FALLBACK_EMAIL = "MAIL";
+
+function processWordAttachments() {
+  const label = getOrCreateLabel_(LABEL_TO_PROCESS);
+  const doneLabel = getOrCreateLabel_(LABEL_DONE);
+
+  const threads = GmailApp.search(
+    `label:${LABEL_TO_PROCESS} has:attachment (filename:doc OR filename:docx)`
+  );
+
+  for (const thread of threads) {
+    const messages = thread.getMessages();
+
+    for (const msg of messages) {
+      const attachments = msg.getAttachments({ includeInlineImages: false });
+
+      const bodyText = (msg.getPlainBody && msg.getPlainBody()) ? msg.getPlainBody() : "";
+      let destEmail = extractBestEmail_(bodyText, msg);
+
+      for (const att of attachments) {
+        const lowerName = att.getName().toLowerCase();
+        if (!lowerName.endsWith(".doc") && !lowerName.endsWith(".docx")) continue;
+
+        const baseName = att.getName().replace(/\.(docx|doc)$/i, "");
+        const { pdfBlob, docText } = convertDocxToPdfAndExtractText_(att, baseName);
+
+        if (!destEmail) destEmail = extractBestEmail_(docText, msg);
+        const finalDest = (destEmail && isAllowed_(destEmail)) ? destEmail : FALLBACK_EMAIL;
+
+        GmailApp.sendEmail(
+          finalDest,
+          `PDF - ${baseName}`,
+          `Bonjour,\n\nVeuillez trouver en pièce jointe la facture en PDF.\n\nCordialement.`,
+          { attachments: [pdfBlob] }
+        );
+      }
+    }
+
+    thread.addLabel(doneLabel);
+    thread.removeLabel(label);
+  }
+}
+
+function convertDocxToPdfAndExtractText_(blob, baseName) {
+  const resource = {
+    title: baseName,
+    mimeType: MimeType.GOOGLE_DOCS,
+    parents: [{ id: DRIVE_FOLDER_ID }],
+  };
+
+  // 1) Convert DOCX -> Google Doc
+  const gdoc = Drive.Files.insert(resource, blob, { convert: true });
+  const gdocId = gdoc.id;
+
+  // 2) Export TXT via alt=media
+  const txtUrl = `https://www.googleapis.com/drive/v2/files/${gdocId}/export?mimeType=text/plain&alt=media`;
+  const docText = UrlFetchApp.fetch(txtUrl, {
+    headers: { Authorization: "Bearer " + ScriptApp.getOAuthToken() },
+    muteHttpExceptions: true,
+  }).getContentText();
+
+  // 3) Export PDF via alt=media
+  const pdfUrl = `https://www.googleapis.com/drive/v2/files/${gdocId}/export?mimeType=application/pdf&alt=media`;
+  const pdfBlob = UrlFetchApp.fetch(pdfUrl, {
+    headers: { Authorization: "Bearer " + ScriptApp.getOAuthToken() },
+    muteHttpExceptions: true,
+  }).getBlob().setName(baseName + ".pdf");
+
+  return { pdfBlob, docText };
+}
+
+
+
+
+function extractBestEmail_(text, msg) {
+  if (!text) return null;
+
+  const candidates = [...new Set((text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [])
+    .map(e => e.toLowerCase()))];
+
+  if (candidates.length === 0) return null;
+
+  const myEmail = Session.getActiveUser().getEmail()?.toLowerCase();
+  const from = msg.getFrom()?.toLowerCase() || "";
+  const fromEmailMatch = from.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  const fromEmail = fromEmailMatch ? fromEmailMatch[0].toLowerCase() : null;
+
+  const banned = new Set([myEmail, fromEmail].filter(Boolean));
+  const filtered = candidates.filter(e => !banned.has(e));
+  if (filtered.length === 0) return candidates[0];
+
+  const keywordRegex = /(destinataire|client|email|e-mail|mail|adresse)\s*[:\-]?\s*([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i;
+  const kw = text.match(keywordRegex);
+  if (kw && kw[2]) {
+    const picked = kw[2].toLowerCase();
+    if (!banned.has(picked)) return picked;
+  }
+
+  return filtered[0];
+}
+
+function isAllowed_(email) {
+  if (!email) return false;
+  if (!ALLOWED_DOMAINS || ALLOWED_DOMAINS.length === 0) return true;
+  const domain = email.split("@")[1]?.toLowerCase();
+  return ALLOWED_DOMAINS.includes(domain);
+}
+
+function getOrCreateLabel_(name) {
+  return GmailApp.getUserLabelByName(name) || GmailApp.createLabel(name);
+}
